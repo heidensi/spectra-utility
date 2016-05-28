@@ -65,7 +65,9 @@ public class Converter {
 		//wrap the paths of the input files
 		PathWrapper paths = new PathWrapper(zipFilePath, rankedLines, unrankedLines);
 		
-		//switch this module out to change the output format
+		//--> switch this module out for another to change the output format
+		// the module has to get a spectra wrapper object as input and should produce a
+		// list of Strings to write to a text-based file
 		AModule<SpectraWrapper, List<String>> module = new SpectraWrapperToCSVModule();
 		
 		//link the following modules together
