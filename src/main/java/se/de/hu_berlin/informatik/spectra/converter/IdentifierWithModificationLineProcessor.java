@@ -1,9 +1,10 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.spectratocsv.Converter;
+package se.de.hu_berlin.informatik.spectra.converter;
 
-import se.de.hu_berlin.informatik.spectratocsv.Converter.SpectraWrapper.Modification;
+import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
+import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper.Modification;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
 

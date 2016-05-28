@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.spectratocsv.Converter;
+package se.de.hu_berlin.informatik.spectra.reader;
 
 import java.util.ArrayList;
 import java.util.HashMap;

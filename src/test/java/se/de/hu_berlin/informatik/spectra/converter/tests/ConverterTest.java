@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.spectratocsv.tests;
+package se.de.hu_berlin.informatik.spectra.converter.tests;
 
 import static org.junit.Assert.*;
 
@@ -17,7 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
-import se.de.hu_berlin.informatik.spectratocsv.Converter.Converter;
+import se.de.hu_berlin.informatik.spectra.converter.Converter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -60,7 +60,7 @@ public class ConverterTest extends TestSettings {
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectratocsv.Converter#main(java.lang.String[])}.
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.reader#main(java.lang.String[])}.
 	 */
 	@Test
 	public void testMain() {

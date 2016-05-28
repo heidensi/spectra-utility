@@ -1,13 +1,13 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.spectratocsv.Converter.modules;
+package se.de.hu_berlin.informatik.spectra.reader.modules;
 
 import java.util.List;
 
-import se.de.hu_berlin.informatik.spectratocsv.Converter.IdentifierWithModificationLineProcessor;
-import se.de.hu_berlin.informatik.spectratocsv.Converter.PathWrapper;
-import se.de.hu_berlin.informatik.spectratocsv.Converter.SpectraWrapper;
+import se.de.hu_berlin.informatik.spectra.converter.IdentifierWithModificationLineProcessor;
+import se.de.hu_berlin.informatik.spectra.reader.PathWrapper;
+import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToByteArrayModule;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ReadZipFileModule;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;

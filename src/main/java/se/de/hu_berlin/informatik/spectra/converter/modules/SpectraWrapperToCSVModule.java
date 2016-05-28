@@ -1,12 +1,12 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.spectratocsv.Converter.modules;
+package se.de.hu_berlin.informatik.spectra.converter.modules;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import se.de.hu_berlin.informatik.spectratocsv.Converter.SpectraWrapper;
+import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
