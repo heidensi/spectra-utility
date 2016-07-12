@@ -8,7 +8,7 @@ import se.de.hu_berlin.informatik.spectra.converter.modules.SpectraWrapperToCSVM
 import se.de.hu_berlin.informatik.spectra.reader.PathWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.modules.PathWrapperToSpectraWrapperModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
@@ -97,7 +97,7 @@ public class Converter {
 				//input: spectra, produces list of Strings
 				converterModule,
 				//input: list of Strings, writes to the specified output
-				new StringListToFileWriterModule<List<String>>(output, true))
+				new ListToFileWriterModule<List<String>>(output, true))
 		.submit(paths);//submission of input paths
 		
 	}
