@@ -39,10 +39,10 @@ public class PathWrapperToSpectraWrapperModule extends AModule<PathWrapper,Spect
 		ZipFileWrapper zip = new ReadZipFileModule().submit(paths.getZipFilePath()).getResult();
 
 		//parse the file containing the identifiers
-		String[] identifiers = new String(zip.get(0)).split(IDENTIFIER_DELIMITER);
+		String[] identifiers = new String(zip.checkedGet(0)).split(IDENTIFIER_DELIMITER);
 
 		//parse the file containing the involvement table
-		byte[] involvementTable = zip.get(1);
+		byte[] involvementTable = zip.checkedGet(1);
 
 		//decode the compressed involvement table (each involvement flag was compressed into one single bit beforehand)
 		involvementTable = new CompressedByteArrayToByteArrayModule().submit(involvementTable).getResult();
