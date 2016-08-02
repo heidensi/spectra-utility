@@ -86,7 +86,7 @@ public class Converter {
 			converterModule = new SpectraWrapperToCSVModule();
 			break;
 		default:
-			Misc.err((Object)null, "'%s' is not a valid mode option. Using CSV output format...", mode);
+			Misc.err(Converter.class, "'%s' is not a valid mode option. Using CSV output format...", mode);
 			converterModule = new SpectraWrapperToCSVModule();
 		}
 		
