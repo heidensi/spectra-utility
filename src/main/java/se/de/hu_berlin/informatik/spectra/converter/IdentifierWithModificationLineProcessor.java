@@ -5,7 +5,7 @@ package se.de.hu_berlin.informatik.spectra.converter;
 
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper.Modification;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
 
 /**
@@ -32,7 +32,7 @@ public class IdentifierWithModificationLineProcessor implements IStringProcessor
 	public boolean process(String line) {
 		String[] parts = line.split(" ");
 		if (parts.length != 2) {
-			Misc.abort(this, "Line '%s' is in a wrong format.", line);
+			Log.abort(this, "Line '%s' is in a wrong format.", line);
 		}
 		Modification modification = null;
 		switch (parts[1]) {
@@ -46,7 +46,7 @@ public class IdentifierWithModificationLineProcessor implements IStringProcessor
 			modification = Modification.DELETE;
 			break;
 		default:
-			Misc.abort(this, "Unknown modification '%s'.", parts[1]);
+			Log.abort(this, "Unknown modification '%s'.", parts[1]);
 		}
 		spectra.setModification(parts[0], modification);
 		return true;

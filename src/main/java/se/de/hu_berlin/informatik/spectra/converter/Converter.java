@@ -9,7 +9,7 @@ import se.de.hu_berlin.informatik.spectra.reader.PathWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.modules.PathWrapperToSpectraWrapperModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -86,7 +86,7 @@ public class Converter {
 			converterModule = new SpectraWrapperToCSVModule();
 			break;
 		default:
-			Misc.err(Converter.class, "'%s' is not a valid mode option. Using CSV output format...", mode);
+			Log.err(Converter.class, "'%s' is not a valid mode option. Using CSV output format...", mode);
 			converterModule = new SpectraWrapperToCSVModule();
 		}
 		
