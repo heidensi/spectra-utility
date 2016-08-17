@@ -3,8 +3,6 @@
  */
 package se.de.hu_berlin.informatik.spectra.reader.modules;
 
-import java.util.List;
-
 import se.de.hu_berlin.informatik.spectra.converter.IdentifierWithModificationLineProcessor;
 import se.de.hu_berlin.informatik.spectra.reader.PathWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
@@ -54,12 +52,12 @@ public class PathWrapperToSpectraWrapperModule extends AModule<PathWrapper,Spect
 		
 		//get all ranked modified lines
 		if (paths.getRankedLines() != null) {
-			new FileLineProcessorModule<List<String>>(new IdentifierWithModificationLineProcessor(spectra))
+			new FileLineProcessorModule<Boolean>(new IdentifierWithModificationLineProcessor(spectra))
 			.submit(paths.getRankedLines());
 		}
 		//also get all unranked modified lines (not really necessary, but maybe for later...)
 		if (paths.getUnrankedLines() != null) {
-			new FileLineProcessorModule<List<String>>(new IdentifierWithModificationLineProcessor(spectra))
+			new FileLineProcessorModule<Boolean>(new IdentifierWithModificationLineProcessor(spectra))
 			.submit(paths.getUnrankedLines());
 		}
 		

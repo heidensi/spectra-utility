@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  * 
  * @author Simon Heiden
  */
-public class IdentifierWithModificationLineProcessor implements IStringProcessor {
+public class IdentifierWithModificationLineProcessor implements IStringProcessor<Boolean> {
 
 	private SpectraWrapper spectra;
 	
@@ -53,7 +53,7 @@ public class IdentifierWithModificationLineProcessor implements IStringProcessor
 	}
 
 	@Override
-	public Object getResult() {
+	public Boolean getResult() {
 		return null;
 	}
 
