@@ -60,7 +60,7 @@ public class ConverterTest extends TestSettings {
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectra.reader#main(java.lang.String[])}.
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.converter.Converter#main(java.lang.String[])}.
 	 */
 	@Test
 	public void testMain() {
