@@ -24,7 +24,7 @@ public class SpectraWrapperToCSVModule extends AModule<SpectraWrapper,List<Strin
 
 	public SpectraWrapperToCSVModule() {
 		//if this module needs an input item
-		super(true);
+		super(true, true);
 	}
 
 	/* (non-Javadoc)
