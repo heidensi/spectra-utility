@@ -1,4 +1,4 @@
 # spectra-utility
-A small Java tool to parse spectra information produced by &lt;insert tool name here>.
+A small Java tool to parse spectra information produced by [BugLoRD](https://github.com/hub-se/BugLoRD).
 
-Needs the [utilities](https://github.com/hub-se/utilities) project as a requirement. (Just download and 'mvn install'.)
+Needs the [HUB-SE-framework](https://github.com/hub-se/HUB-SE-framework) as a requirement to compile. (Download and execute 'mvn install' to add the needed jar-file to your local maven repository.)
