@@ -26,7 +26,7 @@ public class PathWrapperToSpectraWrapperModule extends AModule<PathWrapper,Spect
 	
 	public PathWrapperToSpectraWrapperModule() {
 		//if this module needs an input item
-		super(true, true);
+		super(true);
 	}
 
 	/* (non-Javadoc)
