@@ -39,7 +39,7 @@ public class Converter {
 	private static OptionParser getOptions(String[] args) {
 //		final String tool_usage = "Converter -s spectra-zip-file [-r ranked-lines-file] [-u unranked-lines-file] -o output-file"; 
 		final String tool_usage = "Converter";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, false, args);
 
 		options.add(SPECTRA_INPUT_OPT, "spectraZip", true, "Path to input zip file (zipped and compressed spectra file).", true);
 		options.add(RANKED_INPUT_OPT, "rankedLines", true, "Path to file with ranked modified lines (usually '.ranked_mod_lines').");
