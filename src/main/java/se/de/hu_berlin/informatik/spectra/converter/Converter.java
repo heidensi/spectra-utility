@@ -4,12 +4,15 @@ package se.de.hu_berlin.informatik.spectra.converter;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.apache.commons.cli.Option;
+
 import se.de.hu_berlin.informatik.spectra.converter.modules.SpectraWrapperToCSVModule;
 import se.de.hu_berlin.informatik.spectra.reader.PathWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.modules.PathWrapperToSpectraWrapperModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -22,36 +25,46 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  */
 public class Converter {
 	
-	//option constants
-	private static final String SPECTRA_INPUT_OPT = "s";
-	private static final String RANKED_INPUT_OPT = "r";
-	private static final String UNRANKED_INPUT_OPT = "u";
-	private static final String MODE_OPT = "m";
-	private static final String OUTPUT_OPT = "o";
-	
-	/**
-	 * Parses the options from the command line.
-	 * @param args
-	 * the application's arguments
-	 * @return
-	 * an {@link OptionParser} object that provides access to all parsed options and their values
-	 */
-	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "Converter -s spectra-zip-file [-r ranked-lines-file] [-u unranked-lines-file] -o output-file"; 
-		final String tool_usage = "Converter";
-		final OptionParser options = new OptionParser(tool_usage, false, args);
+	public static enum CmdOptions implements IOptions {
+		/* add options here according to your needs */
+		SPECTRA_INPUT("s", "spectraZip", true, "Path to input zip file (zipped and compressed spectra file).", true),
+		RANKED_INPUT("r", "rankedLines", true, "Path to file with ranked modified lines (usually '.ranked_mod_lines').", false),
+		UNRANKED_INPUT("u", "unrankedLines", true, "Path to file with unranked modified lines (usually '.unranked_mod_lines').", false),
+		MODE("m", "mode", true, "Output format. Arguments may be: 'csv'. Default is 'csv'.", false),
+		OUTPUT("o", "output", true, "Path to output csv data file (e.g. '~/outputDir/project/bugID/data.csv').", true);
 
-		options.add(SPECTRA_INPUT_OPT, "spectraZip", true, "Path to input zip file (zipped and compressed spectra file).", true);
-		options.add(RANKED_INPUT_OPT, "rankedLines", true, "Path to file with ranked modified lines (usually '.ranked_mod_lines').");
-		options.add(UNRANKED_INPUT_OPT, "unrankedLines", true, "Path to file with unranked modified lines (usually '.unranked_mod_lines').");
+		/* the following code blocks should not need to be changed */
+		final private Option option;
+		final private int groupId;
+
+		//adds an option that is not part of any group
+		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description, final boolean required) {
+			this.option = Option.builder(opt).longOpt(longOpt).required(required).hasArg(hasArg).desc(description).build();
+			this.groupId = NO_GROUP;
+		}
 		
-		options.add(MODE_OPT, "mode", true, "Output format. Arguments may be: 'csv'. Default is 'csv'.");
+		//adds an option that is part of the group with the specified index (positive integer)
+		//a negative index means that this option is part of no group
+		//this option will not be required, however, the group itself will be
+		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description, int groupId) {
+			this.option = Option.builder(opt).longOpt(longOpt).required(false).hasArg(hasArg).desc(description).build();
+			this.groupId = groupId;
+		}
 		
-		options.add(OUTPUT_OPT, "output", true, "Path to output csv data file (e.g. '~/outputDir/project/bugID/data.csv').", true);
-        
-        options.parseCommandLine();
-        
-        return options;
+		//adds the given option that will be part of the group with the given id
+		CmdOptions(Option option, int groupId) {
+			this.option = option;
+			this.groupId = groupId;
+		}
+		
+		//adds the given option that will be part of no group
+		CmdOptions(Option option) {
+			this(option, NO_GROUP);
+		}
+		
+		@Override public Option option() { return option; }
+		@Override public int groupId() { return groupId; }
+		@Override public String toString() { return option.getOpt(); }
 	}
 	
 	/**
@@ -60,15 +73,15 @@ public class Converter {
 	 */
 	public static void main(String[] args) {
 
-		OptionParser options = getOptions(args);
+		OptionParser options = OptionParser.getOptions("Converter", true, CmdOptions.class, args);
 
 		//get the input paths and make sure they exist
-		Path zipFilePath = options.isFile(SPECTRA_INPUT_OPT, true);
-		Path rankedLines = options.hasOption(RANKED_INPUT_OPT) ? options.isFile(RANKED_INPUT_OPT, true) : null;
-		Path unrankedLines = options.hasOption(UNRANKED_INPUT_OPT) ? options.isFile(UNRANKED_INPUT_OPT, true) : null;
+		Path zipFilePath = options.isFile(CmdOptions.SPECTRA_INPUT, true);
+		Path rankedLines = options.hasOption(CmdOptions.RANKED_INPUT) ? options.isFile(CmdOptions.RANKED_INPUT, true) : null;
+		Path unrankedLines = options.hasOption(CmdOptions.UNRANKED_INPUT) ? options.isFile(CmdOptions.UNRANKED_INPUT, true) : null;
 		
 		//get the output path (does not need to exist)
-		Path output = options.isFile(OUTPUT_OPT, false);
+		Path output = options.isFile(CmdOptions.OUTPUT, false);
 		
 		//wrap the paths of the input files
 		PathWrapper paths = new PathWrapper(zipFilePath, rankedLines, unrankedLines);
@@ -79,7 +92,7 @@ public class Converter {
 		AModule<SpectraWrapper, List<String>> converterModule = null;
 		
 		//parse the given mode option. If none is given, use "csv"
-		String mode = options.getOptionValue(MODE_OPT, "csv").toLowerCase();
+		String mode = options.getOptionValue(CmdOptions.MODE, "csv").toLowerCase();
 		//add cases to switch for other modes
 		switch (mode) {
 		case "csv":

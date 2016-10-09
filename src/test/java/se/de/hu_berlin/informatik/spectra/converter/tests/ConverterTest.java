@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import se.de.hu_berlin.informatik.spectra.converter.Converter;
+import se.de.hu_berlin.informatik.spectra.converter.Converter.CmdOptions;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -65,10 +66,10 @@ public class ConverterTest extends TestSettings {
 	@Test
 	public void testMain() {
 		String[] args = { 
-				"-s", getStdResourcesDir() + File.separator + "spectraCompressed.zip",
-				"-r", getStdResourcesDir() + File.separator + "ranked_mod_lines",
-				"-u", getStdResourcesDir() + File.separator + "unranked_mod_lines",
-				"-o", getStdTestDir() + File.separator + "spectra.csv" };
+				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "spectraCompressed.zip",
+				CmdOptions.RANKED_INPUT.asArg(), getStdResourcesDir() + File.separator + "ranked_mod_lines",
+				CmdOptions.UNRANKED_INPUT.asArg(), getStdResourcesDir() + File.separator + "unranked_mod_lines",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra.csv" };
 		Converter.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "spectra.csv")));
 	}
