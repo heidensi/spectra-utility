@@ -106,7 +106,7 @@ public class Converter {
 		}
 		
 		//link the following modules together
-		new ModuleLinker().link(
+		new ModuleLinker().append(
 				//input: path wrapper, produces spectra
 				new PathWrapperToSpectraWrapperModule(),
 				//input: spectra, produces list of Strings
