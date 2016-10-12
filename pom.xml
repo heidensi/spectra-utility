@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>se.de.hu_berlin.informatik</groupId>
-	<artifactId>spectra-to-csv</artifactId>
+	<artifactId>spectra-utility</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spectra-utility</name>
 	<description>Converts zipped and compressed spectra files to readable csv data files.</description>
