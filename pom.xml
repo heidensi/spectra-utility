@@ -4,7 +4,7 @@
 	<groupId>se.de.hu_berlin.informatik</groupId>
 	<artifactId>spectra-to-csv</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Compressed Spectra to CSV File Converter</name>
+	<name>spectra-utility</name>
 	<description>Converts zipped and compressed spectra files to readable csv data files.</description>
 
 	<dependencies>
