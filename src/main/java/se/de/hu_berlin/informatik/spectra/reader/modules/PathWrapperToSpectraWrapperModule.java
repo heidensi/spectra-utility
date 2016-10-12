@@ -10,14 +10,14 @@ import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToByteArr
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ReadZipFileModule;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
  * Reads a zipped spectra file and generates a wrapper object for easier access.
  * 
  * @author Simon Heiden
  */
-public class PathWrapperToSpectraWrapperModule extends AModule<PathWrapper,SpectraWrapper> {
+public class PathWrapperToSpectraWrapperModule extends AbstractModule<PathWrapper,SpectraWrapper> {
 
 	/**
 	 * Should not be changed! Used to split the spectra node identifiers.

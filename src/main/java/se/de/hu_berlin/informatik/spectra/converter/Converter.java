@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
@@ -91,7 +91,7 @@ public class Converter {
 		//we may switch this module out for another to change the output format
 		//the module has to get a spectra wrapper object as input and should 
 		//produce a list of Strings to write to a text-based file
-		AModule<SpectraWrapper, List<String>> converterModule = null;
+		AbstractModule<SpectraWrapper, List<String>> converterModule = null;
 		
 		//parse the given mode option. If none is given, use "csv"
 		String mode = options.getOptionValue(CmdOptions.MODE, "csv").toLowerCase();

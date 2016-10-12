@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
  * Module that takes a spectra wrapper object and produces a list of Strings
@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * 
  * @author Simon Heiden
  */
-public class SpectraWrapperToCSVModule extends AModule<SpectraWrapper,List<String>> {
+public class SpectraWrapperToCSVModule extends AbstractModule<SpectraWrapper,List<String>> {
 
 	/**
      * Used CSV delimiter. May be changed as desired.
