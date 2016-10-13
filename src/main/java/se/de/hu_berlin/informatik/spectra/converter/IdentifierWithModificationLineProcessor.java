@@ -6,7 +6,7 @@ package se.de.hu_berlin.informatik.spectra.converter;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper.Modification;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
+import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
 
 /**
  * Takes a {@link String} that is a node identifier in a spectra object together with a
@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  * 
  * @author Simon Heiden
  */
-public class IdentifierWithModificationLineProcessor implements IStringProcessor<Boolean> {
+public class IdentifierWithModificationLineProcessor implements StringProcessor<Boolean> {
 
 	private SpectraWrapper spectra;
 	
