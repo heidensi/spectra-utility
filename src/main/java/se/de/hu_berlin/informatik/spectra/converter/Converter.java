@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.spectra.converter;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.cli.Option;
 
@@ -94,7 +95,7 @@ public class Converter {
 		AbstractModule<SpectraWrapper, List<String>> converterModule = null;
 		
 		//parse the given mode option. If none is given, use "csv"
-		String mode = options.getOptionValue(CmdOptions.MODE, "csv").toLowerCase();
+		String mode = options.getOptionValue(CmdOptions.MODE, "csv").toLowerCase(Locale.getDefault());
 		//add cases to switch for other modes
 		switch (mode) {
 		case "csv":
