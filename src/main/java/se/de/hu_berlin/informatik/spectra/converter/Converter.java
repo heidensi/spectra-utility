@@ -100,6 +100,7 @@ public class Converter {
 		switch (mode) {
 		case "csv":
 			converterPipe = new SpectraWrapperToCSVPipe();
+			break;
 		case "ml":
 			converterPipe = new SpectraWrapperToMLFormatPipe();
 			break;
