@@ -33,6 +33,7 @@ public class PathWrapperToSpectraWrapperModule extends AbstractModule<PathWrappe
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public SpectraWrapper processItem(PathWrapper paths) {
+    	
 		//read the input zip file and return a wrapper for simpler access
 		ZipFileWrapper zip = new ReadZipFileModule().submit(paths.getZipFilePath()).getResult();
 
@@ -60,7 +61,6 @@ public class PathWrapperToSpectraWrapperModule extends AbstractModule<PathWrappe
 			new FileLineProcessorModule<Boolean>(new IdentifierWithModificationLineProcessor(spectra))
 			.submit(paths.getUnrankedLines());
 		}
-		
 		return spectra;
 	}
 

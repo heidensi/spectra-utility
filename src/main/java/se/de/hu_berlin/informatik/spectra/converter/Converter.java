@@ -2,22 +2,22 @@
 package se.de.hu_berlin.informatik.spectra.converter;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.spectra.converter.modules.SpectraWrapperToCSVModule;
+import se.de.hu_berlin.informatik.spectra.converter.modules.SpectraWrapperToCSVPipe;
+import se.de.hu_berlin.informatik.spectra.converter.modules.SpectraWrapperToMLFormatPipe;
 import se.de.hu_berlin.informatik.spectra.reader.PathWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.modules.PathWrapperToSpectraWrapperModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
+import se.de.hu_berlin.informatik.utils.tm.pipes.StringToFileWriterPipe;
 
 /**
  * Parses a zipped spectra file and produces an output file in a desired format.
@@ -92,29 +92,31 @@ public class Converter {
 		//we may switch this module out for another to change the output format
 		//the module has to get a spectra wrapper object as input and should 
 		//produce a list of Strings to write to a text-based file
-		AbstractModule<SpectraWrapper, List<String>> converterModule = null;
+		AbstractPipe<SpectraWrapper, String> converterPipe = null;
 		
-		//parse the given mode option. If none is given, use "csv"
-		String mode = options.getOptionValue(CmdOptions.MODE, "csv").toLowerCase(Locale.getDefault());
+		//parse the given mode option. If none is given, use "ml"
+		String mode = options.getOptionValue(CmdOptions.MODE, "ml").toLowerCase(Locale.getDefault());
 		//add cases to switch for other modes
 		switch (mode) {
 		case "csv":
-			converterModule = new SpectraWrapperToCSVModule();
+			converterPipe = new SpectraWrapperToCSVPipe();
+		case "ml":
+			converterPipe = new SpectraWrapperToMLFormatPipe();
 			break;
 		default:
-			Log.warn(Converter.class, "'%s' is not a valid mode option. Using CSV output format...", mode);
-			converterModule = new SpectraWrapperToCSVModule();
+			Log.warn(Converter.class, "'%s' is not a valid mode option. Using ML output format...", mode);
+			converterPipe = new SpectraWrapperToMLFormatPipe();
 		}
 		
 		//link the following modules together
-		new ModuleLinker().append(
+		new PipeLinker().append(
 				//input: path wrapper, produces spectra
 				new PathWrapperToSpectraWrapperModule(),
-				//input: spectra, produces list of Strings
-				converterModule,
-				//input: list of Strings, writes to the specified output
-				new ListToFileWriterModule<List<String>>(output, true))
-		.submit(paths);//submission of input paths
+				//input: spectra, produces Strings
+				converterPipe,
+				//input: Strings, writes to the specified output
+				new StringToFileWriterPipe(output, true))
+		.submitAndShutdown(paths);//submission of input paths
 		
 	}
 	

@@ -3,35 +3,35 @@
  */
 package se.de.hu_berlin.informatik.spectra.converter.modules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
 
 /**
- * Module that takes a spectra wrapper object and produces a list of Strings
+ * Module that takes a spectra wrapper object and produces a sequence of Strings
  * in CSV format that can be written to a file.
  * 
  * @author Simon Heiden
  */
-public class SpectraWrapperToCSVModule extends AbstractModule<SpectraWrapper,List<String>> {
+public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String> {
 
 	/**
      * Used CSV delimiter. May be changed as desired.
      */
     public static final char CSV_DELIMITER = ';';
 
-	public SpectraWrapperToCSVModule() {
-		//if this module needs an input item
+	public SpectraWrapperToCSVPipe() {
 		super(true);
 	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public List<String> processItem(SpectraWrapper spectra) {
-		return toCSV(spectra);
+	public String processItem(SpectraWrapper spectra) {
+		System.out.println(spectra);
+		toCSV(spectra);
+		
+		return null;
 	}
 
 	/**
@@ -53,10 +53,10 @@ public class SpectraWrapperToCSVModule extends AbstractModule<SpectraWrapper,Lis
      * @return 
      * the combined CSV string to write to a file
      */
-    private static List<String> toCSV(SpectraWrapper spectra) {
+    private void toCSV(SpectraWrapper spectra) {
         final StringBuffer line = new StringBuffer();
-        List<String> lines = new ArrayList<>();
         
+        Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getIdentifierCount(), spectra.getTraces().size());
         //iterate over the identifiers
         for (int i = 0; i < spectra.getIdentifierCount(); ++i) {
         	line.append(spectra.getIdentifiers()[i] + CSV_DELIMITER);
@@ -65,7 +65,8 @@ public class SpectraWrapperToCSVModule extends AbstractModule<SpectraWrapper,Lis
         		line.append(spectra.getTraces().get(j)[i] + String.valueOf(CSV_DELIMITER));
         	}
         	line.append(spectra.getModification(spectra.getIdentifiers()[i]));
-        	lines.add(line.toString());
+        	//send the string to the output of this pipe
+        	submitProcessedItem(line.toString());
 			line.setLength(0);
         }
         
@@ -74,9 +75,8 @@ public class SpectraWrapperToCSVModule extends AbstractModule<SpectraWrapper,Lis
         for (int j = 0; j < spectra.getTraces().size(); ++j) {
     		line.append((spectra.isSuccessful(j) ? "succ" : "fail") + String.valueOf(CSV_DELIMITER));
     	}
-    	lines.add(line.toString());
+        //send the string to the output of this pipe
+    	submitProcessedItem(line.toString());
 		line.setLength(0);
-
-        return lines;
     }
 }
