@@ -6,6 +6,7 @@ package se.de.hu_berlin.informatik.spectra.converter.modules;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
+import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
  * Module that takes a spectra wrapper object and produces a sequence of Strings
@@ -57,8 +58,10 @@ public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String>
         final StringBuffer line = new StringBuffer();
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getIdentifierCount(), spectra.getTraces().size());
+        setTracker(new ProgressBarTracker(spectra.getIdentifierCount()/50, 50));
         //iterate over the identifiers
         for (int i = 0; i < spectra.getIdentifierCount(); ++i) {
+        	track();
         	line.append(spectra.getIdentifiers()[i] + CSV_DELIMITER);
         	//iterate over the traces for each identifier
         	for (int j = 0; j < spectra.getTraces().size(); ++j) {
