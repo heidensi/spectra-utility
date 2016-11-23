@@ -117,7 +117,7 @@
 									</excludes>
 								</filter>
 							</filters>
-							<minimizeJar>true</minimizeJar>
+							<minimizeJar>false</minimizeJar>
 							<finalName>spectra-converter</finalName>
 						</configuration>
 					</execution>
