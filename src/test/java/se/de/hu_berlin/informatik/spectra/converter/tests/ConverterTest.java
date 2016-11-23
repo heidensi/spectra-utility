@@ -66,9 +66,8 @@ public class ConverterTest extends TestSettings {
 	@Test
 	public void testMainCSV() {
 		String[] args = { 
-				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "spectraCompressed.zip",
-				CmdOptions.RANKED_INPUT.asArg(), getStdResourcesDir() + File.separator + "ranked_mod_lines",
-				CmdOptions.UNRANKED_INPUT.asArg(), getStdResourcesDir() + File.separator + "unranked_mod_lines",
+				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.zip",
+				CmdOptions.CHANGES.asArg(), getStdResourcesDir() + File.separator + ".changes",
 				CmdOptions.MODE.asArg(), "csv",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra.csv" };
 		Converter.main(args);
@@ -81,7 +80,7 @@ public class ConverterTest extends TestSettings {
 	@Test
 	public void testMainMLFormat() {
 		String[] args = { 
-				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "spectraCompressed.zip",
+				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.zip",
 				CmdOptions.MODE.asArg(), "ml",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra.ml" };
 		Converter.main(args);
@@ -95,7 +94,7 @@ public class ConverterTest extends TestSettings {
 	@Test
 	public void testMainMLFormatFiltered() {
 		String[] args = { 
-				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "spectraCompressed.zip",
+				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.zip",
 				CmdOptions.MODE.asArg(), "ml",
 				CmdOptions.FILTER.asArg(),
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra_filtered.ml" };
@@ -103,5 +102,20 @@ public class ConverterTest extends TestSettings {
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "spectra_filtered.ml")));
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "spectra_filtered.ml.map")));
 	}
+	
+//	/**
+//	 * Test method for {@link se.de.hu_berlin.informatik.spectra.converter.Converter#main(java.lang.String[])}.
+//	 */
+//	@Test
+//	public void testMainMLFormatFilteredBigSpectra() {
+//		String[] args = { 
+//				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "spectraCompressed_big.zip",
+//				CmdOptions.MODE.asArg(), "ml",
+//				CmdOptions.FILTER.asArg(),
+//				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra_filtered_big.ml" };
+//		Converter.main(args);
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "spectra_filtered_big.ml")));
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "spectra_filtered_big.ml.map")));
+//	}
 
 }

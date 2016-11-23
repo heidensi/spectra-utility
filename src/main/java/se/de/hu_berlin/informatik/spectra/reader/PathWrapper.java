@@ -8,26 +8,20 @@ import java.nio.file.Path;
 public class PathWrapper {
 
 	Path zipFilePath;
-	Path rankedLines;
-	Path unrankedLines;
+	Path changesFile;
 	
-	public PathWrapper(Path zipFilePath, Path rankedLines, Path unrankedLines) {
+	public PathWrapper(Path zipFilePath, Path changesFile) {
 		super();
 		this.zipFilePath = zipFilePath;
-		this.rankedLines = rankedLines;
-		this.unrankedLines = unrankedLines;
+		this.changesFile = changesFile;
 	}
 
 	public Path getZipFilePath() {
 		return zipFilePath;
 	}
 
-	public Path getRankedLines() {
-		return rankedLines;
-	}
-
-	public Path getUnrankedLines() {
-		return unrankedLines;
+	public Path getChangesFile() {
+		return changesFile;
 	}
 	
 }

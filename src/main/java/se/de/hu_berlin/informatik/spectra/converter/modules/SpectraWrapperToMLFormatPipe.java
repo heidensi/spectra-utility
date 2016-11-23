@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -27,7 +31,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,St
 
 	private final boolean filterNonExecuted;
 	
-	private final Map<String, Integer> map;
+	private final Map<SourceCodeBlock, Integer> map;
 	private final Path output;
 
 	public SpectraWrapperToMLFormatPipe(final boolean filterNonExecuted, final Path output) {
@@ -67,26 +71,29 @@ public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,St
      * @return 
      * the combined ML format string to write to a file
      */
-    private void toML(SpectraWrapper spectra) {
+    private void toML(SpectraWrapper spectraWrapper) {
         final StringBuffer line = new StringBuffer();
   
-        Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getIdentifierCount(), spectra.getTraces().size());
-        setTracker(new ProgressBarTracker(spectra.getIdentifierCount()/50, 50));
+        ISpectra<SourceCodeBlock> spectra = spectraWrapper.getSpectra();
+        
+        Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
+        setTracker(new ProgressBarTracker(spectra.getNodes().size()/50, 50));
         //iterate over the node identifiers
-        for (int i = 0; i < spectra.getIdentifierCount(); ++i) {
+        for (INode<SourceCodeBlock> node : spectra.getNodes()) {
         	track();
         	//iterate over the traces for each identifier
-        	for (int j = 0; j < spectra.getTraces().size(); ++j) {
+        	int j = 0;
+        	for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
         		int spectraValue = 0;
-        		boolean executed = spectra.getTraces().get(j)[i] == 1;
+        		boolean executed = trace.isInvolved(node);
         		if (executed) {
-        			if (spectra.isSuccessful(j)) {
+        			if (trace.isSuccessful()) {
         				spectraValue = 1;
         			} else {
         				spectraValue = 3;
         			}
         		} else {
-        			if (spectra.isSuccessful(j)) {
+        			if (trace.isSuccessful()) {
         				spectraValue = 0;
         			} else {
         				spectraValue = 2;
@@ -94,13 +101,14 @@ public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,St
         		}
         		if (!filterNonExecuted || executed) {
         			//gets or computes an integer value for the given identifier
-        			line.append(map.computeIfAbsent(spectra.getIdentifiers()[i], k -> map.size()) 
+        			line.append(map.computeIfAbsent(node.getIdentifier(), k -> map.size()) 
         					+ "\t" + String.valueOf(spectraValue) + "." + String.valueOf(j));
-//        			line.append(spectra.getModification(spectra.getIdentifiers()[i]));
+//        			line.append(spectraWrapper.getModificationsAsString(node.getIdentifier()));
         			//send the string to the output of this pipe
                 	submitProcessedItem(line.toString());
         			line.setLength(0);
         		}
+        		++j;
         	}
         }
     }
@@ -109,8 +117,8 @@ public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,St
 	public String getResultFromCollectedItems() {
 		//store the actual identifier names in a separate file for reference
 		List<String> lines = new ArrayList<>(map.size());
-		Map<String,Integer> identifierNames = Misc.sortByValue(map);
-		for (Entry<String, Integer> identifier : identifierNames.entrySet()) {
+		Map<SourceCodeBlock,Integer> identifierNames = Misc.sortByValue(map);
+		for (Entry<SourceCodeBlock, Integer> identifier : identifierNames.entrySet()) {
 			lines.add(identifier.getValue() + ":" + identifier.getKey());
 		}
 		

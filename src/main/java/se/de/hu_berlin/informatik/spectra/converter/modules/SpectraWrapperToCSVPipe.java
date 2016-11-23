@@ -4,6 +4,10 @@
 package se.de.hu_berlin.informatik.spectra.converter.modules;
 
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
@@ -54,20 +58,22 @@ public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String>
      * @return 
      * the combined CSV string to write to a file
      */
-    private void toCSV(SpectraWrapper spectra) {
+    private void toCSV(SpectraWrapper spectraWrapper) {
         final StringBuffer line = new StringBuffer();
         
-        Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getIdentifierCount(), spectra.getTraces().size());
-        setTracker(new ProgressBarTracker(spectra.getIdentifierCount()/50, 50));
+        ISpectra<SourceCodeBlock> spectra = spectraWrapper.getSpectra();
+        
+        Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
+        setTracker(new ProgressBarTracker(spectra.getNodes().size()/50, 50));
         //iterate over the identifiers
-        for (int i = 0; i < spectra.getIdentifierCount(); ++i) {
+        for (INode<SourceCodeBlock> node : spectra.getNodes()) {
         	track();
-        	line.append(spectra.getIdentifiers()[i] + CSV_DELIMITER);
+        	line.append(node.getIdentifier().toString() + CSV_DELIMITER);
         	//iterate over the traces for each identifier
-        	for (int j = 0; j < spectra.getTraces().size(); ++j) {
-        		line.append(spectra.getTraces().get(j)[i] + String.valueOf(CSV_DELIMITER));
+        	for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
+        		line.append((trace.isInvolved(node) ? 1 : 0) + String.valueOf(CSV_DELIMITER));
         	}
-        	line.append(spectra.getModification(spectra.getIdentifiers()[i]));
+        	line.append(spectraWrapper.getModificationsAsString(node.getIdentifier()));
         	//send the string to the output of this pipe
         	submitProcessedItem(line.toString());
 			line.setLength(0);
@@ -75,8 +81,8 @@ public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String>
         
         line.append("<test result>" + CSV_DELIMITER);
         // at the end, collect the data from the successfulness flags
-        for (int j = 0; j < spectra.getTraces().size(); ++j) {
-    		line.append((spectra.isSuccessful(j) ? "succ" : "fail") + String.valueOf(CSV_DELIMITER));
+        for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
+    		line.append((trace.isSuccessful() ? "succ" : "fail") + String.valueOf(CSV_DELIMITER));
     	}
         //send the string to the output of this pipe
     	submitProcessedItem(line.toString());

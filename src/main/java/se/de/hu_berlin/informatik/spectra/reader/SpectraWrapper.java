@@ -1,11 +1,14 @@
 package se.de.hu_berlin.informatik.spectra.reader;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
 /**
  * Wrapper object for a line spectra.
@@ -14,112 +17,59 @@ import org.junit.Assert;
  */
 public class SpectraWrapper {
 
-	public static enum Modification { CHANGE, DELETE, APPEND };
+	private static Map<String, List<ChangeWrapper>> changesMap = Collections.emptyMap();
 	
-	private List<byte[]> traces;
-	private String[] identifiers;
-	private List<Boolean> successfulFlags;
-	
-	private Map<String, Modification> modifiedLines;
+	private ISpectra<SourceCodeBlock> spectra;
 
-	public SpectraWrapper(String[] identifiers) {
+	public SpectraWrapper(ISpectra<SourceCodeBlock> spectra) {
 		super();
-		this.modifiedLines = new HashMap<>();
-		this.traces = new ArrayList<>();
-		this.successfulFlags = new ArrayList<>();
-		this.identifiers = identifiers;
+		this.spectra = spectra;
 	}
 	
-	/**
-	 * Adds a trace to the spectra.
-	 * @param trace
-	 * the trace to add
-	 * @param successful
-	 * whether the trace is successful
-	 */
-	public void addTrace(byte[] trace, boolean successful) {
-		Assert.assertEquals(trace.length, identifiers.length);
-		traces.add(trace);
-		successfulFlags.add(successful);
+	public ISpectra<SourceCodeBlock> getSpectra() {
+		return spectra;
 	}
 	
-	/**
-	 * Returns the list of traces in this spectra.
-	 * @return
-	 * the list of traces
-	 */
-	public List<byte[]> getTraces() {
-		return traces;
-	}
-	/**
-	 * Checks whether the trace with the given index is successful.
-	 * @param index
-	 * the index of the trace
-	 * @return
-	 * whether the trace is successful
-	 */
-	public boolean isSuccessful(int index) {
-		return successfulFlags.get(index);
-	}
-	
-	/**
-	 * Returns the array of node identifiers.
-	 * @return
-	 * the node identifiers
-	 */
-	public String[] getIdentifiers() {
-		return identifiers;
-	}
-	
-	/**
-	 * Returns the number of node identifiers.
-	 * @return
-	 * the number of node identifiers
-	 */
-	public int getIdentifierCount() {
-		return identifiers.length;
-	}
-	
-	/**
-	 * Get a String representation of the modification that is associated to
-	 * the given node identifier. If no modification is associated with the
-	 * identifier, then the empty String is returned.
-	 * @param identifier
-	 * a node identifier
-	 * @return
-	 * a String representation of the modification associated to the given identifier
-	 */
-	public String getModification(String identifier) {
-		return modifiedLines.containsKey(identifier) ? modificationToString(modifiedLines.get(identifier)) : "";
-	}
-	
-	/**
-	 * Associates the given identifier with the given modification.
-	 * @param identifier
-	 * the identifier to associate with the modification
-	 * @param modification
-	 * the modification to associate with the identifier
-	 */
-	public void setModification(String identifier, Modification modification) {
-		modifiedLines.put(identifier, modification);
-	}
-	
-	/**
-	 * Returns a String representation of a modification.
-	 * @param modification
-	 * the modification
-	 * @return
-	 * a String representation of the given modification
-	 */
-	private static String modificationToString(Modification modification) {
-		switch (modification) {
-		case CHANGE:
-			return "change";
-		case DELETE:
-			return "delete";
-		case APPEND:
-			return "append";
+	public List<ChangeWrapper> getModifications(SourceCodeBlock block) {
+		List<ChangeWrapper> list = Collections.emptyList();
+		//see if the respective file was changed
+		if (changesMap.containsKey(block.getClassName())) {
+			List<ChangeWrapper> changes = changesMap.get(block.getClassName());
+			for (ChangeWrapper change : changes) {
+				//is the ranked block part of a changed statement?
+				if (block.getEndLineNumber() >= change.getStart() && block.getStartLineNumber() <= change.getEnd()) {
+					if (list.isEmpty()) {
+						list = new ArrayList<>(1);
+					}
+					list.add(change);
+				}
+			}
 		}
-		return "";
+		
+		return list;
+	}
+	
+	public String getModificationsAsString(SourceCodeBlock block) {
+		List<ChangeWrapper> list = getModifications(block);
+		
+		if (list.isEmpty()) {
+			return "";
+		} else {
+			StringBuilder builder = new StringBuilder();
+			boolean first = true;
+			for (ChangeWrapper change : list) {
+				if (first) {
+					first = false;
+				} else {
+					builder.append(", ");
+				}
+				builder.append(change.getModificationType());
+			}
+			return builder.toString();
+		}
+	}
+	
+	public void loadChanges(Path changeFile) {
+		changesMap = ChangeWrapper.readChangesFromFile(changeFile);
 	}
 }

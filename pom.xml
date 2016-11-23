@@ -23,6 +23,11 @@
 			<artifactId>system-rules</artifactId>
 			<version>1.16.0</version>
 		</dependency>
+		<dependency>
+			<groupId>se.de.hu_berlin.informatik</groupId>
+			<artifactId>stardust</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -112,7 +117,7 @@
 									</excludes>
 								</filter>
 							</filters>
-							<minimizeJar>false</minimizeJar>
+							<minimizeJar>true</minimizeJar>
 							<finalName>spectra-converter</finalName>
 						</configuration>
 					</execution>

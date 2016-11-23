@@ -30,10 +30,9 @@ public class Converter {
 	
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		SPECTRA_INPUT("i", "spectraZip", true, "Path to input zip file (zipped and compressed spectra file).", true),
+		SPECTRA_INPUT("i", "spectraInput", true, "Path to input zip file (zipped and compressed spectra file).", true),
 		FILTER("f", "filterNonExecuted", false, "Whether to filter out lines that were not executed (Only works for .ml output format).", false),
-		RANKED_INPUT("r", "rankedLines", true, "Path to file with ranked modified lines (usually '.ranked_mod_lines').", false),
-		UNRANKED_INPUT("u", "unrankedLines", true, "Path to file with unranked modified lines (usually '.unranked_mod_lines').", false),
+		CHANGES("c", "changesFile", true, "Path to file with change information (usually '.changes').", false),
 		MODE("m", "mode", true, "Output format. Arguments may be: 'csv' or 'ml'. Default is 'ml'.", false),
 		OUTPUT("o", "output", true, "Path to output csv data file (e.g. '~/outputDir/project/bugID/data.csv').", true);
 
@@ -82,14 +81,13 @@ public class Converter {
 
 		//get the input paths and make sure they exist
 		Path zipFilePath = options.isFile(CmdOptions.SPECTRA_INPUT, true);
-		Path rankedLines = options.hasOption(CmdOptions.RANKED_INPUT) ? options.isFile(CmdOptions.RANKED_INPUT, true) : null;
-		Path unrankedLines = options.hasOption(CmdOptions.UNRANKED_INPUT) ? options.isFile(CmdOptions.UNRANKED_INPUT, true) : null;
+		Path changesFile = options.hasOption(CmdOptions.CHANGES) ? options.isFile(CmdOptions.CHANGES, true) : null;
 		
 		//get the output path (does not need to exist)
 		Path output = options.isFile(CmdOptions.OUTPUT, false);
 		
 		//wrap the paths of the input files
-		PathWrapper paths = new PathWrapper(zipFilePath, rankedLines, unrankedLines);
+		PathWrapper paths = new PathWrapper(zipFilePath, changesFile);
 		
 		//we may switch this module out for another to change the output format
 		//the module has to get a spectra wrapper object as input and should 
