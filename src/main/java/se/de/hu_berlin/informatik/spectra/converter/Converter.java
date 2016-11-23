@@ -77,7 +77,7 @@ public class Converter {
 	 */
 	public static void main(String[] args) {
 
-		OptionParser options = OptionParser.getOptions("Converter", true, CmdOptions.class, args);
+		OptionParser options = OptionParser.getOptions("Converter", false, CmdOptions.class, args);
 
 		//get the input paths and make sure they exist
 		Path zipFilePath = options.isFile(CmdOptions.SPECTRA_INPUT, true);
