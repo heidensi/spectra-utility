@@ -2,6 +2,7 @@
 package se.de.hu_berlin.informatik.spectra.converter;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Locale;
 
 import org.apache.commons.cli.Option;
@@ -29,10 +30,11 @@ public class Converter {
 	
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		SPECTRA_INPUT("s", "spectraZip", true, "Path to input zip file (zipped and compressed spectra file).", true),
+		SPECTRA_INPUT("i", "spectraZip", true, "Path to input zip file (zipped and compressed spectra file).", true),
+		FILTER("f", "filterNonExecuted", false, "Whether to filter out lines that were not executed (Only works for .ml output format).", false),
 		RANKED_INPUT("r", "rankedLines", true, "Path to file with ranked modified lines (usually '.ranked_mod_lines').", false),
 		UNRANKED_INPUT("u", "unrankedLines", true, "Path to file with unranked modified lines (usually '.unranked_mod_lines').", false),
-		MODE("m", "mode", true, "Output format. Arguments may be: 'csv'. Default is 'csv'.", false),
+		MODE("m", "mode", true, "Output format. Arguments may be: 'csv' or 'ml'. Default is 'ml'.", false),
 		OUTPUT("o", "output", true, "Path to output csv data file (e.g. '~/outputDir/project/bugID/data.csv').", true);
 
 		/* the following code blocks should not need to be changed */
@@ -102,11 +104,11 @@ public class Converter {
 			converterPipe = new SpectraWrapperToCSVPipe();
 			break;
 		case "ml":
-			converterPipe = new SpectraWrapperToMLFormatPipe();
+			converterPipe = new SpectraWrapperToMLFormatPipe(options.hasOption(CmdOptions.FILTER), Paths.get(output.toString() + ".map"));
 			break;
 		default:
 			Log.warn(Converter.class, "'%s' is not a valid mode option. Using ML output format...", mode);
-			converterPipe = new SpectraWrapperToMLFormatPipe();
+			converterPipe = new SpectraWrapperToMLFormatPipe(options.hasOption(CmdOptions.FILTER), Paths.get(output.toString() + ".map"));
 		}
 		
 		//link the following modules together

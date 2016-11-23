@@ -86,6 +86,22 @@ public class ConverterTest extends TestSettings {
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra.ml" };
 		Converter.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "spectra.ml")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "spectra.ml.map")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.converter.Converter#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testMainMLFormatFiltered() {
+		String[] args = { 
+				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "spectraCompressed.zip",
+				CmdOptions.MODE.asArg(), "ml",
+				CmdOptions.FILTER.asArg(),
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra_filtered.ml" };
+		Converter.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "spectra_filtered.ml")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "spectra_filtered.ml.map")));
 	}
 
 }

@@ -3,8 +3,17 @@
  */
 package se.de.hu_berlin.informatik.spectra.converter.modules;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
+import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
@@ -16,15 +25,23 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
  */
 public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,String> {
 
-	public SpectraWrapperToMLFormatPipe() {
+	private final boolean filterNonExecuted;
+	
+	private final Map<String, Integer> map;
+	private final Path output;
+
+	public SpectraWrapperToMLFormatPipe(final boolean filterNonExecuted, final Path output) {
 		super(true);
+		this.filterNonExecuted = filterNonExecuted;
+		this.output = output;
+		this.map = new HashMap<>();
 	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public String processItem(SpectraWrapper spectra) {
-		toCSV(spectra);
+		toML(spectra);
 		
 		return null;
 	}
@@ -48,9 +65,9 @@ public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,St
      * @param spectra
      * the spectra wrapper object
      * @return 
-     * the combined CSV string to write to a file
+     * the combined ML format string to write to a file
      */
-    private void toCSV(SpectraWrapper spectra) {
+    private void toML(SpectraWrapper spectra) {
         final StringBuffer line = new StringBuffer();
   
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getIdentifierCount(), spectra.getTraces().size());
@@ -60,7 +77,6 @@ public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,St
         	track();
         	//iterate over the traces for each identifier
         	for (int j = 0; j < spectra.getTraces().size(); ++j) {
-        		line.append(spectra.getIdentifiers()[i] + "\t");
         		int spectraValue = 0;
         		boolean executed = spectra.getTraces().get(j)[i] == 1;
         		if (executed) {
@@ -76,13 +92,33 @@ public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,St
         				spectraValue = 2;
         			}
         		}
-        		line.append(String.valueOf(spectraValue) + "." + String.valueOf(j));
-//            	line.append(spectra.getModification(spectra.getIdentifiers()[i]));
-        		
-        		//send the string to the output of this pipe
-            	submitProcessedItem(line.toString());
-    			line.setLength(0);
+        		if (!filterNonExecuted || executed) {
+        			//gets or computes an integer value for the given identifier
+        			line.append(map.computeIfAbsent(spectra.getIdentifiers()[i], k -> map.size()) 
+        					+ "\t" + String.valueOf(spectraValue) + "." + String.valueOf(j));
+//        			line.append(spectra.getModification(spectra.getIdentifiers()[i]));
+        			//send the string to the output of this pipe
+                	submitProcessedItem(line.toString());
+        			line.setLength(0);
+        		}
         	}
         }
     }
+
+	@Override
+	public String getResultFromCollectedItems() {
+		//store the actual identifier names in a separate file for reference
+		List<String> lines = new ArrayList<>(map.size());
+		Map<String,Integer> identifierNames = Misc.sortByValue(map);
+		for (Entry<String, Integer> identifier : identifierNames.entrySet()) {
+			lines.add(identifier.getValue() + ":" + identifier.getKey());
+		}
+		
+		new ListToFileWriterModule<List<String>>(output, true)
+		.submit(lines);
+		
+		return null;
+	}
+    
+    
 }
