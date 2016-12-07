@@ -42,7 +42,7 @@ public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String>
 	/**
      * Turns a spectra wrapper object into CSV representation like this:
      * <pre>
-     * 	-ids- ( t1 , t2 , t3 , ... , tN ) -modification- <- test case identifiers! Not stored, currently
+     * 	-ids- ( t1 , t2 , t3 , ... , tN ) -modification- <- test case identifiers
      * 	node1 |  1 |  1 |  0 | ... |  1 |                <- involvement with first node identifier
      * 	node2 |  1 |  0 |  0 | ... |  0 |     append     <- involvement with second node identifier
      * 	node3 |  0 |  0 |  1 | ... |  1 |     change     <- ...
@@ -65,10 +65,18 @@ public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String>
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
         setTracker(new ProgressBarTracker(spectra.getNodes().size()/50, 50));
+        //iterate over the traces to get the test case identifiers
+        for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
+    		line.append(CSV_DELIMITER + trace.getIdentifier().replace(CSV_DELIMITER, '_'));
+    	}
+        //send the string to the output of this pipe
+    	submitProcessedItem(line.toString());
+		line.setLength(0);
+		
         //iterate over the identifiers
         for (INode<SourceCodeBlock> node : spectra.getNodes()) {
         	track();
-        	line.append(node.getIdentifier().toString() + CSV_DELIMITER);
+        	line.append(node.getIdentifier().toString().replace(CSV_DELIMITER, '_') + CSV_DELIMITER);
         	//iterate over the traces for each identifier
         	for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
         		line.append((trace.isInvolved(node) ? 1 : 0) + String.valueOf(CSV_DELIMITER));
