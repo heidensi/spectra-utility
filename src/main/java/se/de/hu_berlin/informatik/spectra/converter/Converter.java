@@ -11,7 +11,12 @@ import se.de.hu_berlin.informatik.spectra.converter.modules.SpectraWrapperToCSVP
 import se.de.hu_berlin.informatik.spectra.converter.modules.SpectraWrapperToMLFormatPipe;
 import se.de.hu_berlin.informatik.spectra.reader.PathWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
-import se.de.hu_berlin.informatik.spectra.reader.modules.PathWrapperToSpectraWrapperModule;
+import se.de.hu_berlin.informatik.spectra.reader.modules.SpectraToSpectraWrapperModule;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.BuildBlockSpectraModule;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
+import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -31,7 +36,12 @@ public class Converter {
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		SPECTRA_INPUT("i", "spectraInput", true, "Path to input zip file (zipped and compressed spectra file).", true),
-		FILTER("f", "filterNonExecuted", false, "Whether to filter out lines that were not executed (Only works for .ml output format).", false),
+		FILTER("f", "filterNonExecuted", false, "Whether to filter out lines that were not executed "
+				+ "(Only works for .ml output format).", false),
+		USE_BLOCKS("b", "combineToBlocks", false, "Whether to combine sequences of spectra elements to larger blocks "
+				+ "if they were executed by the same set of traces.", false),
+		RESTRICT_TO_FAILED("r", "restrictToFailed", false, "Whether to only include nodes that were executed "
+				+ "by some failing test.", false),
 		CHANGES("c", "changesFile", true, "Path to file with change information (usually '.changes').", false),
 		MODE("m", "mode", true, "Output format. Arguments may be: 'csv' or 'ml'. Default is 'ml'.", false),
 		OUTPUT("o", "output", true, "Path to output csv data file (e.g. '~/outputDir/project/bugID/data.csv').", true);
@@ -109,15 +119,33 @@ public class Converter {
 			converterPipe = new SpectraWrapperToMLFormatPipe(options.hasOption(CmdOptions.FILTER), Paths.get(output.toString() + ".map"));
 		}
 		
-		//link the following modules together
-		new PipeLinker().append(
-				//input: path wrapper, produces spectra
-				new PathWrapperToSpectraWrapperModule(),
-				//input: spectra, produces Strings
+		//load the spectra from the given zip file
+		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadBlockSpectraFromZipFile(paths.getZipFilePath());
+		
+		//create a pipe linker
+		PipeLinker linker = new PipeLinker();
+		
+		//finally, link the modules together
+		
+		if (options.hasOption(CmdOptions.RESTRICT_TO_FAILED)) {
+			//remove nodes that were not executed by any failed test case
+			linker.append(new FilterSpectraModule<SourceCodeBlock>());
+		}
+		
+		if (options.hasOption(CmdOptions.USE_BLOCKS)) {
+			//combine sequences of nodes that were executed by the 
+			//same set of test cases to a larger block
+			linker.append(new BuildBlockSpectraModule());
+		}
+		
+		linker.append(
+				//input: spectra, output: spectra wrapper
+				new SpectraToSpectraWrapperModule(changesFile),
+				//input: spectra wrapper, output: Strings (lines) to write to a file
 				converterPipe,
 				//input: Strings, writes to the specified output
 				new StringToFileWriterPipe(output, true))
-		.submitAndShutdown(paths);//submission of input paths
+		.submitAndShutdown(spectra);//submit spectra
 		
 	}
 	

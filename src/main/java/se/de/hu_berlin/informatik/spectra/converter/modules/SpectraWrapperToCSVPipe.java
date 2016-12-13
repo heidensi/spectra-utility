@@ -33,7 +33,6 @@ public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String>
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public String processItem(SpectraWrapper spectra) {
-		System.out.println(spectra);
 		toCSV(spectra);
 		
 		return null;
@@ -64,7 +63,7 @@ public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String>
         ISpectra<SourceCodeBlock> spectra = spectraWrapper.getSpectra();
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
-        setTracker(new ProgressBarTracker(spectra.getNodes().size()/50, 50));
+        setTracker(new ProgressBarTracker(spectra.getNodes().size()/50 + 1, 50));
         //iterate over the traces to get the test case identifiers
         for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
     		line.append(CSV_DELIMITER + trace.getIdentifier().replace(CSV_DELIMITER, '_'));

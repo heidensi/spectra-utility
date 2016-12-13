@@ -77,7 +77,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,St
         ISpectra<SourceCodeBlock> spectra = spectraWrapper.getSpectra();
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
-        setTracker(new ProgressBarTracker(spectra.getNodes().size()/50, 50));
+        setTracker(new ProgressBarTracker(spectra.getNodes().size()/50 + 1, 50));
         //iterate over the node identifiers
         for (INode<SourceCodeBlock> node : spectra.getNodes()) {
         	track();
