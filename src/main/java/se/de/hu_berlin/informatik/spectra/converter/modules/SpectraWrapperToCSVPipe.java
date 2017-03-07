@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.tm.Producer;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
@@ -32,8 +33,8 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public String processItem(SpectraWrapper spectra) {
-		toCSV(spectra);
+	public String processItem(SpectraWrapper spectra, Producer<String> producer) {
+		toCSV(spectra, producer);
 		
 		return null;
 	}
@@ -51,13 +52,14 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
      * 	      |succ|fail|succ| ... |succ|                <- successfulness flags
      * </pre>
      * Node identifiers could be added at the left side or the right side, if needed.
+	 * @param producer 
      * 
      * @param spectra
      * the spectra wrapper object
      * @return 
      * the combined CSV string to write to a file
      */
-    private void toCSV(SpectraWrapper spectraWrapper) {
+    private void toCSV(SpectraWrapper spectraWrapper, Producer<String> producer) {
         final StringBuffer line = new StringBuffer();
         
         ISpectra<SourceCodeBlock> spectra = spectraWrapper.getSpectra();
@@ -69,7 +71,7 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
     		line.append(CSV_DELIMITER + trace.getIdentifier().replace(CSV_DELIMITER, '_'));
     	}
         //send the string to the output of this pipe
-    	manualOutput(line.toString());
+        producer.produce(line.toString());
 		line.setLength(0);
 		
         //iterate over the identifiers
@@ -82,7 +84,7 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
         	}
         	line.append(spectraWrapper.getModificationsAsString(node.getIdentifier()));
         	//send the string to the output of this pipe
-        	manualOutput(line.toString());
+        	producer.produce(line.toString());
 			line.setLength(0);
         }
         
@@ -92,7 +94,8 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
     		line.append((trace.isSuccessful() ? "succ" : "fail") + String.valueOf(CSV_DELIMITER));
     	}
         //send the string to the output of this pipe
-        manualOutput(line.toString());
+        producer.produce(line.toString());
 		line.setLength(0);
     }
+
 }

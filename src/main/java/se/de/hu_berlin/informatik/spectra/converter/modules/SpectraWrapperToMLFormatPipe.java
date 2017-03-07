@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.tm.Producer;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
@@ -44,8 +45,8 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public String processItem(SpectraWrapper spectra) {
-		toML(spectra);
+	public String processItem(SpectraWrapper spectra, Producer<String> producer) {
+		toML(spectra, producer);
 		
 		return null;
 	}
@@ -71,7 +72,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
      * @return 
      * the combined ML format string to write to a file
      */
-    private void toML(SpectraWrapper spectraWrapper) {
+    private void toML(SpectraWrapper spectraWrapper, Producer<String> producer) {
         final StringBuffer line = new StringBuffer();
   
         ISpectra<SourceCodeBlock> spectra = spectraWrapper.getSpectra();
@@ -105,7 +106,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
         					+ "\t" + String.valueOf(spectraValue) + "." + String.valueOf(j));
 //        			line.append(spectraWrapper.getModificationsAsString(node.getIdentifier()));
         			//send the string to the output of this pipe
-        			manualOutput(line.toString());
+        			producer.produce(line.toString());
         			line.setLength(0);
         		}
         		++j;
@@ -126,7 +127,6 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
 		.submit(lines);
 		
 		return null;
-	}
-    
+	}   
     
 }
