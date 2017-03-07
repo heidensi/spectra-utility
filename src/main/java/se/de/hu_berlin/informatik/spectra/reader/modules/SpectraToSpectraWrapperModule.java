@@ -8,20 +8,19 @@ import java.nio.file.Path;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Reads a spectra and generates a wrapper object for easier access.
  * 
  * @author Simon Heiden
  */
-public class SpectraToSpectraWrapperModule extends AbstractModule<ISpectra<SourceCodeBlock>,SpectraWrapper> {
+public class SpectraToSpectraWrapperModule extends AbstractProcessor<ISpectra<SourceCodeBlock>,SpectraWrapper> {
 	
 	private Path changesFile;
 
 	public SpectraToSpectraWrapperModule(Path changesFile) {
-		//if this module needs an input item
-		super(true);
+		super();
 		this.changesFile = changesFile;
 	}
 

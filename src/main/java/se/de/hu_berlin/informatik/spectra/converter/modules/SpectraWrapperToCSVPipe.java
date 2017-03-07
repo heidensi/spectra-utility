@@ -9,7 +9,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
@@ -18,7 +18,7 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
  * 
  * @author Simon Heiden
  */
-public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String> {
+public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,String> {
 
 	/**
      * Used CSV delimiter. May be changed as desired.
@@ -26,7 +26,7 @@ public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String>
     public static final char CSV_DELIMITER = ';';
 
 	public SpectraWrapperToCSVPipe() {
-		super(true);
+		super();
 	}
 
 	/* (non-Javadoc)
@@ -69,7 +69,7 @@ public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String>
     		line.append(CSV_DELIMITER + trace.getIdentifier().replace(CSV_DELIMITER, '_'));
     	}
         //send the string to the output of this pipe
-    	submitProcessedItem(line.toString());
+    	manualOutput(line.toString());
 		line.setLength(0);
 		
         //iterate over the identifiers
@@ -82,7 +82,7 @@ public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String>
         	}
         	line.append(spectraWrapper.getModificationsAsString(node.getIdentifier()));
         	//send the string to the output of this pipe
-        	submitProcessedItem(line.toString());
+        	manualOutput(line.toString());
 			line.setLength(0);
         }
         
@@ -92,7 +92,7 @@ public class SpectraWrapperToCSVPipe extends AbstractPipe<SpectraWrapper,String>
     		line.append((trace.isSuccessful() ? "succ" : "fail") + String.valueOf(CSV_DELIMITER));
     	}
         //send the string to the output of this pipe
-    	submitProcessedItem(line.toString());
+        manualOutput(line.toString());
 		line.setLength(0);
     }
 }

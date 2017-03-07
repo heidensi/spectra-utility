@@ -109,14 +109,14 @@ public class Converter {
 		//add cases to switch for other modes
 		switch (mode) {
 		case "csv":
-			converterPipe = new SpectraWrapperToCSVPipe();
+			converterPipe = new SpectraWrapperToCSVPipe().asPipe();
 			break;
 		case "ml":
-			converterPipe = new SpectraWrapperToMLFormatPipe(options.hasOption(CmdOptions.FILTER), Paths.get(output.toString() + ".map"));
+			converterPipe = new SpectraWrapperToMLFormatPipe(options.hasOption(CmdOptions.FILTER), Paths.get(output.toString() + ".map")).asPipe();
 			break;
 		default:
 			Log.warn(Converter.class, "'%s' is not a valid mode option. Using ML output format...", mode);
-			converterPipe = new SpectraWrapperToMLFormatPipe(options.hasOption(CmdOptions.FILTER), Paths.get(output.toString() + ".map"));
+			converterPipe = new SpectraWrapperToMLFormatPipe(options.hasOption(CmdOptions.FILTER), Paths.get(output.toString() + ".map")).asPipe();
 		}
 		
 		//load the spectra from the given zip file

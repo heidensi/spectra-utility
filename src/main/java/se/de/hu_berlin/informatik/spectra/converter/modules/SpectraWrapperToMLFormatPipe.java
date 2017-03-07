@@ -18,7 +18,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
@@ -27,7 +27,7 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
  * 
  * @author Simon Heiden
  */
-public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,String> {
+public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapper,String> {
 
 	private final boolean filterNonExecuted;
 	
@@ -35,7 +35,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,St
 	private final Path output;
 
 	public SpectraWrapperToMLFormatPipe(final boolean filterNonExecuted, final Path output) {
-		super(true);
+		super();
 		this.filterNonExecuted = filterNonExecuted;
 		this.output = output;
 		this.map = new HashMap<>();
@@ -105,7 +105,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractPipe<SpectraWrapper,St
         					+ "\t" + String.valueOf(spectraValue) + "." + String.valueOf(j));
 //        			line.append(spectraWrapper.getModificationsAsString(node.getIdentifier()));
         			//send the string to the output of this pipe
-                	submitProcessedItem(line.toString());
+        			manualOutput(line.toString());
         			line.setLength(0);
         		}
         		++j;
