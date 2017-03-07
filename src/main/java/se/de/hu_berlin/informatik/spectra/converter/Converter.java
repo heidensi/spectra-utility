@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.Pipe;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.StringToFileWriterPipe;
 
@@ -102,7 +102,7 @@ public class Converter {
 		//we may switch this module out for another to change the output format
 		//the module has to get a spectra wrapper object as input and should 
 		//produce a list of Strings to write to a text-based file
-		AbstractPipe<SpectraWrapper, String> converterPipe = null;
+		Pipe<SpectraWrapper, String> converterPipe = null;
 		
 		//parse the given mode option. If none is given, use "ml"
 		String mode = options.getOptionValue(CmdOptions.MODE, "ml").toLowerCase(Locale.getDefault());
