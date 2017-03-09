@@ -15,11 +15,11 @@ import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.tm.Producer;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.Producer;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
@@ -123,7 +123,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
 			lines.add(identifier.getValue() + ":" + identifier.getKey());
 		}
 		
-		new ListToFileWriterModule<List<String>>(output, true)
+		new StringListToFileWriter<List<String>>(output, true)
 		.submit(lines);
 		
 		return null;

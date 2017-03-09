@@ -19,11 +19,11 @@ import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraMod
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.basics.StringsToFileWriter;
+import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
+import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.Pipe;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.StringToFileWriterPipe;
 
 /**
  * Parses a zipped spectra file and produces an output file in a desired format.
@@ -144,7 +144,7 @@ public class Converter {
 				//input: spectra wrapper, output: Strings (lines) to write to a file
 				converterPipe,
 				//input: Strings, writes to the specified output
-				new StringToFileWriterPipe(output, true))
+				new StringsToFileWriter(output, true))
 		.submitAndShutdown(spectra);//submit spectra
 		
 	}

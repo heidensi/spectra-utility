@@ -9,8 +9,8 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.tm.Producer;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.Producer;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**

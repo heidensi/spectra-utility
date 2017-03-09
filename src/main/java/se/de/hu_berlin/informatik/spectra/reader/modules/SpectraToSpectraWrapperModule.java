@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * Reads a spectra and generates a wrapper object for easier access.
