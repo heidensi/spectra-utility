@@ -45,6 +45,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
+	@Override
 	public String processItem(SpectraWrapper spectra, Producer<String> producer) {
 		toML(spectra, producer);
 		
