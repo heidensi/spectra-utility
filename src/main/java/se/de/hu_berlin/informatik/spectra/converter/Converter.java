@@ -18,6 +18,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode.CoverageType;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.BuildBlockSpectraModule;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.InvertTraceInvolvementSpectraModule;
 import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -41,6 +42,10 @@ public class Converter {
 		SPECTRA_INPUT("i", "spectraInput", true, "Path to input zip file (zipped and compressed spectra file).", true),
 		USE_BLOCKS("b", "combineToBlocks", false, "Whether to combine sequences of spectra elements to larger blocks "
 				+ "if they were executed by the same set of traces.", false),
+		INVERT_SUCCESSFUL("invSucc", "invertSuccessful", false, "Whether to invert the involvements of nodes in successful traces. "
+				+ "Will be done AFTER removing any nodes.", false),
+		INVERT_FAILING("invFail", "invertFailing", false, "Whether to invert the involvements of nodes in failing traces. "
+				+ "Will be done AFTER removing any nodes.", false),
 		FILTER("f", "filterNonExecuted", false, "Whether to filter out lines that were not executed "
 				+ "(Only works for .ml output format).", false),
 		REMOVE_NODES(Option.builder("rm").longOpt("removeNodes").required(false).hasArgs()
@@ -182,6 +187,12 @@ public class Converter {
 			//combine sequences of nodes that were executed by the 
 			//same set of test cases to a larger block
 			linker.append(new BuildBlockSpectraModule());
+		}
+		
+		if (options.hasOption(CmdOptions.INVERT_FAILING) || options.hasOption(CmdOptions.INVERT_SUCCESSFUL)) {
+			//invert involvements of nodes
+			linker.append(new InvertTraceInvolvementSpectraModule<SourceCodeBlock>(
+					options.hasOption(CmdOptions.INVERT_SUCCESSFUL), options.hasOption(CmdOptions.INVERT_FAILING)));
 		}
 		
 		linker.append(

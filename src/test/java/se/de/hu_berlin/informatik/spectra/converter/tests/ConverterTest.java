@@ -86,6 +86,19 @@ public class ConverterTest extends TestSettings {
 		assertTrue(Files.exists(out2));
 		
 		assertTrue(out.toFile().length() > out2.toFile().length());
+		
+		String[] args3 = { 
+				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.zip",
+				CmdOptions.MODE.asArg(), "csv",
+				CmdOptions.USE_BLOCKS.asArg(),
+				CmdOptions.REMOVE_NODES.asArg(), "ef_eq_zero",
+				CmdOptions.INVERT_SUCCESSFUL.asArg(),
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra3.csv" };
+		Converter.main(args3);
+		Path out3 = Paths.get(getStdTestDir(), "spectra2.csv");
+		assertTrue(Files.exists(out3));
+		
+		assertTrue(out2.toFile().length() == out3.toFile().length());
 	}
 	
 	/**
