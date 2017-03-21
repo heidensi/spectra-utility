@@ -40,7 +40,7 @@ public class ConverterTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class ConverterTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 	
 	@Rule
@@ -79,7 +79,7 @@ public class ConverterTest extends TestSettings {
 				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.zip",
 				CmdOptions.MODE.asArg(), "csv",
 				CmdOptions.USE_BLOCKS.asArg(),
-				CmdOptions.RESTRICT_TO_FAILED.asArg(),
+				CmdOptions.REMOVE_NODES.asArg(), "ef_eq_zero",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra2.csv" };
 		Converter.main(args2);
 		Path out2 = Paths.get(getStdTestDir(), "spectra2.csv");
@@ -107,7 +107,7 @@ public class ConverterTest extends TestSettings {
 				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.zip",
 				CmdOptions.MODE.asArg(), "ml",
 				CmdOptions.USE_BLOCKS.asArg(),
-				CmdOptions.RESTRICT_TO_FAILED.asArg(),
+				CmdOptions.REMOVE_NODES.asArg(), "ef_eq_zero",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra2.ml" };
 		Converter.main(args2);
 		Path out2 = Paths.get(getStdTestDir(), "spectra2.ml");
@@ -122,7 +122,7 @@ public class ConverterTest extends TestSettings {
 				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.zip",
 				CmdOptions.MODE.asArg(), "ml",
 				CmdOptions.USE_BLOCKS.asArg(),
-				CmdOptions.RESTRICT_TO_FAILED.asArg(),
+				CmdOptions.REMOVE_NODES.asArg(), "ef_eq_zero", "not_executed",
 				CmdOptions.FILTER.asArg(),
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra3.ml" };
 		Converter.main(args3);

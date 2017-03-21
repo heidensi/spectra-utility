@@ -13,11 +13,14 @@ import se.de.hu_berlin.informatik.spectra.reader.PathWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.spectra.reader.modules.SpectraToSpectraWrapperModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.INode.CoverageType;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.BuildBlockSpectraModule;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.basics.StringsToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
@@ -36,15 +39,16 @@ public class Converter {
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		SPECTRA_INPUT("i", "spectraInput", true, "Path to input zip file (zipped and compressed spectra file).", true),
-		FILTER("f", "filterNonExecuted", false, "Whether to filter out lines that were not executed "
-				+ "(Only works for .ml output format).", false),
 		USE_BLOCKS("b", "combineToBlocks", false, "Whether to combine sequences of spectra elements to larger blocks "
 				+ "if they were executed by the same set of traces.", false),
-		RESTRICT_TO_FAILED("r", "restrictToFailed", false, "Whether to only include nodes that were executed "
-				+ "by some failing test.", false),
+		FILTER("f", "filterNonExecuted", false, "Whether to filter out lines that were not executed "
+				+ "(Only works for .ml output format).", false),
+		REMOVE_NODES(Option.builder("rm").longOpt("removeNodes").required(false).hasArgs()
+				.desc("Whether to remove groups of nodes with certain properties from the spectra. Possible options are: " +
+						Misc.enumToString(INode.CoverageType.class) + ".").build()),
 		CHANGES("c", "changesFile", true, "Path to file with change information (usually '.changes').", false),
 		MODE("m", "mode", true, "Output format. Arguments may be: 'csv' or 'ml'. Default is 'ml'.", false),
-		OUTPUT("o", "output", true, "Path to output csv data file (e.g. '~/outputDir/project/bugID/data.csv').", true);
+		OUTPUT("o", "output", true, "Path to output file (e.g. '~/outputDir/project/bugID/data.csv').", true);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -125,11 +129,53 @@ public class Converter {
 		//create a pipe linker
 		PipeLinker linker = new PipeLinker();
 		
-		//finally, link the modules together
+		//finally, create and link the modules together
 		
-		if (options.hasOption(CmdOptions.RESTRICT_TO_FAILED)) {
-			//remove nodes that were not executed by any failed test case
-			linker.append(new FilterSpectraModule<SourceCodeBlock>());
+		if (options.hasOption(CmdOptions.REMOVE_NODES)) {
+			String[] values = options.getOptionValues(CmdOptions.REMOVE_NODES);
+			if (values != null) {
+				for (String value : values) {
+					//remove nodes that are part of certain node groups
+					CoverageType type = Misc.getEnumFromToString(CoverageType.class, value.toLowerCase(Locale.getDefault()));
+					if (type == null) {
+						Log.abort(Converter.class, "Unknown option value: '%s'", value);
+					}
+					switch(type) {
+					case EF_EQUALS_ZERO:
+						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.EF_EQUALS_ZERO));
+						break;
+					case EF_GT_ZERO:
+						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.EF_GT_ZERO));
+						break;
+					case EP_EQUALS_ZERO:
+						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.EP_EQUALS_ZERO));
+						break;
+					case EP_GT_ZERO:
+						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.EP_GT_ZERO));
+						break;
+					case EXECUTED:
+						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.EXECUTED));
+						break;
+					case NF_EQUALS_ZERO:
+						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.NF_EQUALS_ZERO));
+						break;
+					case NF_GT_ZERO:
+						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.NF_GT_ZERO));
+						break;
+					case NOT_EXECUTED:
+						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.NOT_EXECUTED));
+						break;
+					case NP_EQUALS_ZERO:
+						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.NP_EQUALS_ZERO));
+						break;
+					case NP_GT_ZERO:
+						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.NP_GT_ZERO));
+						break;
+					default:
+						Log.abort(Converter.class, "Unknown option value: '%s'", value);
+					}
+				}
+			}
 		}
 		
 		if (options.hasOption(CmdOptions.USE_BLOCKS)) {
