@@ -40,7 +40,7 @@ public class ConverterTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class ConverterTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 	
 	@Rule
@@ -95,7 +95,7 @@ public class ConverterTest extends TestSettings {
 				CmdOptions.INVERT_SUCCESSFUL.asArg(),
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra3.csv" };
 		Converter.main(args3);
-		Path out3 = Paths.get(getStdTestDir(), "spectra2.csv");
+		Path out3 = Paths.get(getStdTestDir(), "spectra3.csv");
 		assertTrue(Files.exists(out3));
 		
 		assertTrue(out2.toFile().length() == out3.toFile().length());
