@@ -10,7 +10,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.processors.Producer;
+import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
@@ -34,8 +34,8 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public String processItem(SpectraWrapper spectra, Producer<String> producer) {
-		toCSV(spectra, producer);
+	public String processItem(SpectraWrapper spectra, ProcessorSocket<SpectraWrapper, String> socket) {
+		toCSV(spectra, socket);
 		
 		return null;
 	}
@@ -53,31 +53,31 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
      * 	      |succ|fail|succ| ... |succ|                <- successfulness flags
      * </pre>
      * Node identifiers could be added at the left side or the right side, if needed.
-	 * @param producer 
-     * 
-     * @param spectra
+	 * @param socket 
+     * the socket
+     * @param spectraWrapper
      * the spectra wrapper object
      * @return 
      * the combined CSV string to write to a file
      */
-    private void toCSV(SpectraWrapper spectraWrapper, Producer<String> producer) {
+    private void toCSV(SpectraWrapper spectraWrapper, ProcessorSocket<SpectraWrapper, String> socket) {
         final StringBuffer line = new StringBuffer();
         
         ISpectra<SourceCodeBlock> spectra = spectraWrapper.getSpectra();
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
-        setTracker(new ProgressBarTracker(spectra.getNodes().size()/50 + 1, 50));
+        socket.setTracker(new ProgressBarTracker(spectra.getNodes().size()/50 + 1, 50));
         //iterate over the traces to get the test case identifiers
         for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
     		line.append(CSV_DELIMITER + trace.getIdentifier().replace(CSV_DELIMITER, '_'));
     	}
         //send the string to the output of this pipe
-        producer.produce(line.toString());
+        socket.produce(line.toString());
 		line.setLength(0);
 		
         //iterate over the identifiers
         for (INode<SourceCodeBlock> node : spectra.getNodes()) {
-        	track();
+        	socket.track();
         	line.append(node.getIdentifier().toString().replace(CSV_DELIMITER, '_') + CSV_DELIMITER);
         	//iterate over the traces for each identifier
         	for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
@@ -85,7 +85,7 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
         	}
         	line.append(spectraWrapper.getModificationsAsString(node.getIdentifier()));
         	//send the string to the output of this pipe
-        	producer.produce(line.toString());
+        	socket.produce(line.toString());
 			line.setLength(0);
         }
         
@@ -95,7 +95,7 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
     		line.append((trace.isSuccessful() ? "succ" : "fail") + String.valueOf(CSV_DELIMITER));
     	}
         //send the string to the output of this pipe
-        producer.produce(line.toString());
+        socket.produce(line.toString());
 		line.setLength(0);
     }
 

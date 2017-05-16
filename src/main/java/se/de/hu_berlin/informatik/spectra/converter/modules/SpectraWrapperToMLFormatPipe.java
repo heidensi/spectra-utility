@@ -19,7 +19,7 @@ import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.processors.Producer;
+import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
@@ -46,8 +46,8 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public String processItem(SpectraWrapper spectra, Producer<String> producer) {
-		toML(spectra, producer);
+	public String processItem(SpectraWrapper spectra, ProcessorSocket<SpectraWrapper, String> socket) {
+		toML(spectra, socket);
 		
 		return null;
 	}
@@ -68,21 +68,23 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
      * - 2 means a failing non-executed testcase,
      * - 3 means a failing executed testcase.
      * </pre>
-     * @param spectra
+     * @param spectraWrapper
      * the spectra wrapper object
+     * @param socket
+     * the socket
      * @return 
      * the combined ML format string to write to a file
      */
-    private void toML(SpectraWrapper spectraWrapper, Producer<String> producer) {
+    private void toML(SpectraWrapper spectraWrapper, ProcessorSocket<SpectraWrapper, String> socket) {
         final StringBuffer line = new StringBuffer();
   
         ISpectra<SourceCodeBlock> spectra = spectraWrapper.getSpectra();
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
-        setTracker(new ProgressBarTracker(spectra.getNodes().size()/50 + 1, 50));
+        socket.setTracker(new ProgressBarTracker(spectra.getNodes().size()/50 + 1, 50));
         //iterate over the node identifiers
         for (INode<SourceCodeBlock> node : spectra.getNodes()) {
-        	track();
+        	socket.track();
         	//iterate over the traces for each identifier
         	int j = 0;
         	for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
@@ -107,7 +109,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
         					+ "\t" + String.valueOf(spectraValue) + "." + String.valueOf(j));
 //        			line.append(spectraWrapper.getModificationsAsString(node.getIdentifier()));
         			//send the string to the output of this pipe
-        			producer.produce(line.toString());
+        			socket.produce(line.toString());
         			line.setLength(0);
         		}
         		++j;
