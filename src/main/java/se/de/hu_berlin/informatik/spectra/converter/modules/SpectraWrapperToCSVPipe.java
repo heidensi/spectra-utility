@@ -11,6 +11,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
+import se.de.hu_berlin.informatik.utils.tracking.NewProgressBarTracker;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
@@ -66,7 +67,7 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
         ISpectra<SourceCodeBlock> spectra = spectraWrapper.getSpectra();
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
-        socket.setTracker(new ProgressBarTracker(spectra.getNodes().size()/50 + 1, 50));
+        socket.setTracker(new NewProgressBarTracker(spectra.getNodes().size()/50 + 1, spectra.getNodes().size()));
         //iterate over the traces to get the test case identifiers
         for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
     		line.append(CSV_DELIMITER + trace.getIdentifier().replace(CSV_DELIMITER, '_'));
