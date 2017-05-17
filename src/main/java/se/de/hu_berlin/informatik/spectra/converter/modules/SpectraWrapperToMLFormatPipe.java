@@ -21,7 +21,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.tracking.NewProgressBarTracker;
-import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
  * Module that takes a spectra wrapper object and produces a sequence of Strings
