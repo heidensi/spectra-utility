@@ -27,6 +27,7 @@ import se.de.hu_berlin.informatik.utils.processors.basics.StringsToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionValue;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 
 /**
@@ -48,9 +49,8 @@ public class Converter {
 				+ "Will be done AFTER removing any nodes.", false),
 		FILTER("f", "filterNonExecuted", false, "Whether to filter out lines that were not executed "
 				+ "(Only works for .ml output format).", false),
-		REMOVE_NODES(Option.builder("rm").longOpt("removeNodes").required(false).hasArgs()
-				.desc("Whether to remove groups of nodes with certain properties from the spectra. Possible options are: " +
-						Misc.enumToString(INode.CoverageType.class) + ".").build()),
+		REMOVE_NODES("rm", "removeNodes", INode.CoverageType.class, null,
+				"Whether to remove groups of nodes with certain properties from the spectra.", false),
 		CHANGES("c", "changesFile", true, "Path to file with change information (usually '.changes').", false),
 		MODE("m", "mode", true, "Output format. Arguments may be: 'csv' or 'ml'. Default is 'ml'.", false),
 		OUTPUT("o", "output", true, "Path to output file (e.g. '~/outputDir/project/bugID/data.csv').", true);
@@ -74,6 +74,23 @@ public class Converter {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).
 					hasArg(hasArg).desc(description).build(), groupId);
+		}
+		
+		//adds an option that may have arguments from a given set (Enum)
+		<T extends Enum<T> & OptionValue<T>> CmdOptions(final String opt, final String longOpt, 
+				Class<T> valueSet, T defaultValue, final String description, final boolean required) {
+			if (defaultValue == null) {
+			this.option = new OptionWrapper(
+					Option.builder(opt).longOpt(longOpt).required(required).
+					hasArgs().desc(description + " Possible arguments: " +
+						Misc.enumToString(valueSet) + ".").build(), NO_GROUP);
+			} else {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArg(true).desc(description + " Possible arguments: " +
+							Misc.enumToString(valueSet) + ". Default: " + 
+								defaultValue.toString() + ".").build(), NO_GROUP);
+			}
 		}
 		
 		//adds the given option that will be part of the group with the given id
@@ -136,15 +153,12 @@ public class Converter {
 		
 		//finally, create and link the modules together
 		
+		//check if we have to remove some kinds of nodes
 		if (options.hasOption(CmdOptions.REMOVE_NODES)) {
-			String[] values = options.getOptionValues(CmdOptions.REMOVE_NODES);
+			CoverageType[] values = options.getOptionValues(CmdOptions.REMOVE_NODES, CoverageType.class, true);
 			if (values != null) {
-				for (String value : values) {
+				for (CoverageType type : values) {
 					//remove nodes that are part of certain node groups
-					CoverageType type = Misc.getEnumFromToString(CoverageType.class, value.toLowerCase(Locale.getDefault()));
-					if (type == null) {
-						Log.abort(Converter.class, "Unknown option value: '%s'", value);
-					}
 					switch(type) {
 					case EF_EQUALS_ZERO:
 						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.EF_EQUALS_ZERO));
@@ -177,7 +191,7 @@ public class Converter {
 						linker.append(new FilterSpectraModule<SourceCodeBlock>(CoverageType.NP_GT_ZERO));
 						break;
 					default:
-						Log.abort(Converter.class, "Unknown option value: '%s'", value);
+						Log.abort(Converter.class, "Coverage type not implemented: '%s'", type);
 					}
 				}
 			}
