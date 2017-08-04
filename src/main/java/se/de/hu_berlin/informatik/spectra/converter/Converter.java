@@ -27,7 +27,6 @@ import se.de.hu_berlin.informatik.utils.processors.basics.StringsToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
-import se.de.hu_berlin.informatik.utils.optionparser.OptionValue;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 
 /**
@@ -77,7 +76,7 @@ public class Converter {
 		}
 		
 		//adds an option that may have arguments from a given set (Enum)
-		<T extends Enum<T> & OptionValue<T>> CmdOptions(final String opt, final String longOpt, 
+		<T extends Enum<T>> CmdOptions(final String opt, final String longOpt, 
 				Class<T> valueSet, T defaultValue, final String description, final boolean required) {
 			if (defaultValue == null) {
 			this.option = new OptionWrapper(
