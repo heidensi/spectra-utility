@@ -33,8 +33,8 @@ public class SpectraWrapper {
 	public List<ChangeWrapper> getModifications(SourceCodeBlock block) {
 		List<ChangeWrapper> list = Collections.emptyList();
 		//see if the respective file was changed
-		if (changesMap.containsKey(block.getClassName())) {
-			List<ChangeWrapper> changes = changesMap.get(block.getClassName());
+		if (changesMap.containsKey(block.getFilePath())) {
+			List<ChangeWrapper> changes = changesMap.get(block.getFilePath());
 			for (ChangeWrapper change : changes) {
 				//is the ranked block part of a changed statement?
 				if (block.getEndLineNumber() >= change.getStart() && block.getStartLineNumber() <= change.getEnd()) {
