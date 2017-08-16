@@ -17,6 +17,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.INode.CoverageType;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.BuildBlockSpectraModule;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.BuildCoherentSpectraModule;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.InvertTraceInvolvementSpectraModule;
 import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
@@ -195,6 +196,8 @@ public class Converter {
 				}
 			}
 		}
+		
+		linker.append(new BuildCoherentSpectraModule());
 		
 		if (options.hasOption(CmdOptions.USE_BLOCKS)) {
 			//combine sequences of nodes that were executed by the 

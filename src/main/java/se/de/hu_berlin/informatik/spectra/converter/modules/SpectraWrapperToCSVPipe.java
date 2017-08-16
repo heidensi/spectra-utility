@@ -3,6 +3,11 @@
  */
 package se.de.hu_berlin.informatik.spectra.converter.modules;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
@@ -75,8 +80,16 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
         socket.produce(line.toString());
 		line.setLength(0);
 		
+		List<INode<SourceCodeBlock>> nodes = new ArrayList<>(spectra.getNodes());
+		Collections.sort(nodes, new Comparator<INode<SourceCodeBlock>>() {
+			@Override
+			public int compare(INode<SourceCodeBlock> o1, INode<SourceCodeBlock> o2) {
+				return o1.getIdentifier().compareTo(o2.getIdentifier());
+			}
+		});
+		
         //iterate over the identifiers
-        for (INode<SourceCodeBlock> node : spectra.getNodes()) {
+        for (INode<SourceCodeBlock> node : nodes) {
         	socket.track();
         	line.append(node.getIdentifier().toString().replace(CSV_DELIMITER, '_') + CSV_DELIMITER);
         	//iterate over the traces for each identifier
