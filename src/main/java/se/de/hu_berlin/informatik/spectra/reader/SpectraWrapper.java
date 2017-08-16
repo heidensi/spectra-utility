@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
@@ -17,7 +18,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
  */
 public class SpectraWrapper {
 
-	private static Map<String, List<ChangeWrapper>> changesMap = Collections.emptyMap();
+	private Map<String, List<ChangeWrapper>> changesMap = Collections.emptyMap();
 	
 	private ISpectra<SourceCodeBlock> spectra;
 
@@ -30,29 +31,51 @@ public class SpectraWrapper {
 		return spectra;
 	}
 	
-	public List<ChangeWrapper> getModifications(SourceCodeBlock block) {
-		List<ChangeWrapper> list = Collections.emptyList();
+	/**
+	 * Returns the list of changes relevant to the given {@link SourceCodeBlock}.
+	 * @param ignoreRefactorings
+	 * whether to ignore changes that are refactorings
+	 * @param block
+	 * the block to check
+	 * @param changesMap
+	 * the map of all existing changes
+	 * @return
+	 * list of changes relevant to the given block; {@code null} if no changes match
+	 */
+	public List<ChangeWrapper> getModifications(boolean ignoreRefactorings, 
+			SourceCodeBlock block) {
+		List<ChangeWrapper> list = null;
 		//see if the respective file was changed
-		if (changesMap.containsKey(block.getFilePath())) {
-			List<ChangeWrapper> changes = changesMap.get(block.getFilePath());
+		List<ChangeWrapper> changes = changesMap.get(block.getFilePath());
+		if (changes != null) {
 			for (ChangeWrapper change : changes) {
-				//is the ranked block part of a changed statement?
-				if (block.getEndLineNumber() >= change.getStart() && block.getStartLineNumber() <= change.getEnd()) {
-					if (list.isEmpty()) {
-						list = new ArrayList<>(1);
+				
+				if (ignoreRefactorings) {
+					//no semantic change like changes to a comment or something like that? then proceed...
+					if (change.getModificationType() == ModificationType.NO_SEMANTIC_CHANGE) {
+						continue;
 					}
-					list.add(change);
+				}
+				
+				//is the ranked block part of a changed statement?
+				for (int deltaLine : change.getIncludedDeltas()) {
+					if (block.getStartLineNumber() <= deltaLine && deltaLine <= block.getEndLineNumber()) {
+						if (list == null) {
+							list = new ArrayList<>(1);
+						}
+						list.add(change);
+						break;
+					}
 				}
 			}
 		}
-		
 		return list;
 	}
 	
 	public String getModificationsAsString(SourceCodeBlock block) {
-		List<ChangeWrapper> list = getModifications(block);
+		List<ChangeWrapper> list = getModifications(false, block);
 		
-		if (list.isEmpty()) {
+		if (list == null) {
 			return "";
 		} else {
 			StringBuilder builder = new StringBuilder();

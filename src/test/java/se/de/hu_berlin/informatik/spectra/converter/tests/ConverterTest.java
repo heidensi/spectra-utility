@@ -68,7 +68,7 @@ public class ConverterTest extends TestSettings {
 	public void testMainCSV() {
 		String[] args = { 
 				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.zip",
-				CmdOptions.CHANGES.asArg(), getStdResourcesDir() + File.separator + ".changes",
+				CmdOptions.CHANGES.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.changes",
 				CmdOptions.MODE.asArg(), "csv",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "spectra.csv" };
 		Converter.main(args);
@@ -77,6 +77,7 @@ public class ConverterTest extends TestSettings {
 		
 		String[] args2 = { 
 				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.zip",
+				CmdOptions.CHANGES.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.changes",
 				CmdOptions.MODE.asArg(), "csv",
 				CmdOptions.USE_BLOCKS.asArg(),
 				CmdOptions.REMOVE_NODES.asArg(), "ef_eq_zero",
@@ -89,6 +90,7 @@ public class ConverterTest extends TestSettings {
 		
 		String[] args3 = { 
 				CmdOptions.SPECTRA_INPUT.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.zip",
+				CmdOptions.CHANGES.asArg(), getStdResourcesDir() + File.separator + "Chart-7b.changes",
 				CmdOptions.MODE.asArg(), "csv",
 				CmdOptions.USE_BLOCKS.asArg(),
 				CmdOptions.REMOVE_NODES.asArg(), "ef_eq_zero",
