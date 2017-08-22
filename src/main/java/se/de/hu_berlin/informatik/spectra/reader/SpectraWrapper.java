@@ -1,13 +1,12 @@
 package se.de.hu_berlin.informatik.spectra.reader;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
@@ -31,53 +30,9 @@ public class SpectraWrapper {
 		return spectra;
 	}
 	
-	/**
-	 * Returns the list of changes relevant to the given {@link SourceCodeBlock}.
-	 * @param ignoreRefactorings
-	 * whether to ignore changes that are refactorings
-	 * @param block
-	 * the block to check
-	 * @param changesMap
-	 * the map of all existing changes
-	 * @return
-	 * list of changes relevant to the given block; {@code null} if no changes match
-	 */
-	public List<ChangeWrapper> getModifications(boolean ignoreRefactorings, 
-			SourceCodeBlock block) {
-		List<ChangeWrapper> list = null;
-		//see if the respective file was changed
-		List<ChangeWrapper> changes = changesMap.get(block.getFilePath());
-		if (changes != null) {
-			for (ChangeWrapper change : changes) {
-				
-				if (change.getModificationType() == ModificationType.NO_CHANGE) {
-					continue;
-				}
-				
-				if (ignoreRefactorings) {
-					//no semantic change like changes to a comment or something like that? then proceed...
-					if (change.getModificationType() == ModificationType.NO_SEMANTIC_CHANGE) {
-						continue;
-					}
-				}
-				
-				//is the ranked block part of a changed statement?
-				for (int deltaLine : change.getIncludedDeltas()) {
-					if (block.getStartLineNumber() <= deltaLine && deltaLine <= block.getEndLineNumber()) {
-						if (list == null) {
-							list = new ArrayList<>(1);
-						}
-						list.add(change);
-						break;
-					}
-				}
-			}
-		}
-		return list;
-	}
-	
 	public String getModificationsAsString(SourceCodeBlock block) {
-		List<ChangeWrapper> list = getModifications(false, block);
+		List<ChangeWrapper> list = ChangeCheckerUtils.getModifications(block.getFilePath(), 
+				block.getStartLineNumber(), block.getEndLineNumber(), true, changesMap);
 		
 		if (list == null) {
 			return "";
