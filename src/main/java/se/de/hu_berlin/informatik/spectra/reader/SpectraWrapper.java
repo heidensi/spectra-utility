@@ -56,7 +56,7 @@ public class SpectraWrapper {
 				
 				if (ignoreRefactorings) {
 					//no semantic change like changes to a comment or something like that? then proceed...
-					if (change.getModificationType() == ModificationType.PROB_NO_CHANGE) {
+					if (change.getModificationType() == ModificationType.NO_SEMANTIC_CHANGE) {
 						continue;
 					}
 				}
