@@ -4,6 +4,7 @@
 package se.de.hu_berlin.informatik.spectra.converter.modules;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -72,8 +73,13 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
         socket.setTracker(new NewProgressBarTracker(spectra.getNodes().size()/50 + 1, spectra.getNodes().size()));
+        Collection<ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
+        Collection<ITrace<SourceCodeBlock>> successfulTraces = spectra.getSuccessfulTraces();
         //iterate over the traces to get the test case identifiers
-        for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
+        for (ITrace<SourceCodeBlock> trace : failingTraces) {
+    		line.append(CSV_DELIMITER + trace.getIdentifier().replace(CSV_DELIMITER, '_'));
+    	}
+        for (ITrace<SourceCodeBlock> trace : successfulTraces) {
     		line.append(CSV_DELIMITER + trace.getIdentifier().replace(CSV_DELIMITER, '_'));
     	}
         //send the string to the output of this pipe
@@ -93,7 +99,10 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
         	socket.track();
         	line.append(node.getIdentifier().toString().replace(CSV_DELIMITER, '_') + CSV_DELIMITER);
         	//iterate over the traces for each identifier
-        	for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
+        	for (ITrace<SourceCodeBlock> trace : failingTraces) {
+        		line.append((trace.isInvolved(node) ? 1 : 0) + String.valueOf(CSV_DELIMITER));
+        	}
+        	for (ITrace<SourceCodeBlock> trace : successfulTraces) {
         		line.append((trace.isInvolved(node) ? 1 : 0) + String.valueOf(CSV_DELIMITER));
         	}
         	line.append(spectraWrapper.getModificationsAsString(node.getIdentifier()));
@@ -104,8 +113,11 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
         
         line.append("<test result>" + CSV_DELIMITER);
         // at the end, collect the data from the successfulness flags
-        for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
-    		line.append((trace.isSuccessful() ? "succ" : "fail") + String.valueOf(CSV_DELIMITER));
+        for (int i = 0; i < failingTraces.size(); ++i) {
+        	line.append("fail" + String.valueOf(CSV_DELIMITER));
+    	}
+        for (int i = 0; i < successfulTraces.size(); ++i) {
+        	line.append("succ" + String.valueOf(CSV_DELIMITER));
     	}
         //send the string to the output of this pipe
         socket.produce(line.toString());
