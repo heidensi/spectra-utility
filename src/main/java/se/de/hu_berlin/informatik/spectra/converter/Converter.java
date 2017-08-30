@@ -217,7 +217,7 @@ public class Converter {
 				//input: spectra wrapper, output: Strings (lines) to write to a file
 				converterPipe,
 				//input: Strings, writes to the specified output
-				new StringsToFileWriter(output, true))
+				new StringsToFileWriter<>(output, true))
 		.submitAndShutdown(spectra);//submit spectra
 		
 	}

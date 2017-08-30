@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
-import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -126,7 +126,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
 			lines.add(identifier.getValue() + ":" + identifier.getKey());
 		}
 		
-		new StringListToFileWriter<List<String>>(output, true)
+		new ListToFileWriter<List<String>>(output, true)
 		.submit(lines);
 		
 		return null;
