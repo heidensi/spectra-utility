@@ -146,7 +146,7 @@ public class Converter {
 		}
 		
 		//load the spectra from the given zip file
-		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(paths.getZipFilePath());
+		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(paths.getZipFilePath());
 		
 		//create a pipe linker
 		PipeLinker linker = new PipeLinker();

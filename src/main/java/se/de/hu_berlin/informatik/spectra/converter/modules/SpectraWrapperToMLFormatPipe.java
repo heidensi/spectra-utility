@@ -78,7 +78,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
     private void toML(SpectraWrapper spectraWrapper, ProcessorSocket<SpectraWrapper, String> socket) {
         final StringBuffer line = new StringBuffer();
   
-        ISpectra<SourceCodeBlock> spectra = spectraWrapper.getSpectra();
+        ISpectra<SourceCodeBlock, ?> spectra = spectraWrapper.getSpectra();
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
         socket.setTracker(new NewProgressBarTracker(spectra.getNodes().size()/50 + 1, spectra.getNodes().size()));

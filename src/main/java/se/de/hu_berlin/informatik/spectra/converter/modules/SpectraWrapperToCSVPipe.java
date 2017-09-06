@@ -69,12 +69,12 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
     private void toCSV(SpectraWrapper spectraWrapper, ProcessorSocket<SpectraWrapper, String> socket) {
         final StringBuffer line = new StringBuffer();
         
-        ISpectra<SourceCodeBlock> spectra = spectraWrapper.getSpectra();
+        ISpectra<SourceCodeBlock, ?> spectra = spectraWrapper.getSpectra();
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
         socket.setTracker(new NewProgressBarTracker(spectra.getNodes().size()/50 + 1, spectra.getNodes().size()));
-        Collection<ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
-        Collection<ITrace<SourceCodeBlock>> successfulTraces = spectra.getSuccessfulTraces();
+        Collection<? extends ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
+        Collection<? extends ITrace<SourceCodeBlock>> successfulTraces = spectra.getSuccessfulTraces();
         //iterate over the traces to get the test case identifiers
         for (ITrace<SourceCodeBlock> trace : failingTraces) {
     		line.append(CSV_DELIMITER + trace.getIdentifier().replace(CSV_DELIMITER, '_'));

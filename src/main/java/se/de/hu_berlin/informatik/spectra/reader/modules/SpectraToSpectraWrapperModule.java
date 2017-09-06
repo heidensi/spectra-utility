@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class SpectraToSpectraWrapperModule extends AbstractProcessor<ISpectra<SourceCodeBlock>,SpectraWrapper> {
+public class SpectraToSpectraWrapperModule extends AbstractProcessor<ISpectra<SourceCodeBlock,?>,SpectraWrapper> {
 	
 	private Path changesFile;
 
@@ -27,7 +27,7 @@ public class SpectraToSpectraWrapperModule extends AbstractProcessor<ISpectra<So
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public SpectraWrapper processItem(ISpectra<SourceCodeBlock> spectra) {
+	public SpectraWrapper processItem(ISpectra<SourceCodeBlock,?> spectra) {
     	
 		SpectraWrapper spectraWrapper = new SpectraWrapper(spectra);
 

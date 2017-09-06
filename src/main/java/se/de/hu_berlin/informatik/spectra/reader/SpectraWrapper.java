@@ -19,14 +19,14 @@ public class SpectraWrapper {
 
 	private Map<String, List<ChangeWrapper>> changesMap = Collections.emptyMap();
 	
-	private ISpectra<SourceCodeBlock> spectra;
+	private ISpectra<SourceCodeBlock, ?> spectra;
 
-	public SpectraWrapper(ISpectra<SourceCodeBlock> spectra) {
+	public SpectraWrapper(ISpectra<SourceCodeBlock, ?> spectra2) {
 		super();
-		this.spectra = spectra;
+		this.spectra = spectra2;
 	}
 	
-	public ISpectra<SourceCodeBlock> getSpectra() {
+	public ISpectra<SourceCodeBlock, ?> getSpectra() {
 		return spectra;
 	}
 	
