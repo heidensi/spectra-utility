@@ -123,7 +123,7 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
 		List<String> lines = new ArrayList<>(map.size());
 		Map<SourceCodeBlock,Integer> identifierNames = Misc.sortByValue(map);
 		for (Entry<SourceCodeBlock, Integer> identifier : identifierNames.entrySet()) {
-			lines.add(identifier.getValue() + ":" + identifier.getKey());
+			lines.add(identifier.getValue() + ":" + identifier.getKey().toCompressedString());
 		}
 		
 		new ListToFileWriter<List<String>>(output, true)

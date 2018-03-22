@@ -1,6 +1,7 @@
 
 package se.de.hu_berlin.informatik.spectra.converter;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
@@ -21,6 +22,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.manipulation.BuildCoherentSpe
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.InvertTraceInvolvementSpectraModule;
 import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -40,7 +42,7 @@ public class Converter {
 	
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		SPECTRA_INPUT("i", "spectraInput", true, "Path to input zip file (zipped and compressed spectra file).", true),
+		SPECTRA_INPUT("i", "spectraInput", true, "Path to input zip file (zipped and compressed spectra file) or directory with zip files.", true),
 		USE_BLOCKS("b", "combineToBlocks", false, "Whether to combine sequences of spectra elements to larger blocks "
 				+ "if they were executed by the same set of traces.", false),
 		INVERT_SUCCESSFUL("invSucc", "invertSuccessful", false, "Whether to invert the involvements of nodes in successful traces. "
@@ -53,7 +55,7 @@ public class Converter {
 				"Whether to remove groups of nodes with certain properties from the spectra.", false),
 		CHANGES("c", "changesFile", true, "Path to file with change information (usually '.changes').", false),
 		MODE("m", "mode", true, "Output format. Arguments may be: 'csv' or 'ml'. Default is 'ml'.", false),
-		OUTPUT("o", "output", true, "Path to output file (e.g. '~/outputDir/project/bugID/data.csv').", true);
+		OUTPUT("o", "output", true, "Path to output file (e.g. '~/outputDir/project/bugID/data.csv') or output directory (if the input is a directory).", true);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -107,29 +109,50 @@ public class Converter {
 		@Override public OptionWrapper getOptionWrapper() { return option; }
 	}
 	
-	/**
-	 * @param args
-	 * -s spectra-zip-file [-r ranked-lines-file] [-u unranked-lines-file] -o output-file
-	 */
 	public static void main(String[] args) {
 
 		OptionParser options = OptionParser.getOptions("Converter", false, CmdOptions.class, args);
 
-		//get the input paths and make sure they exist
-		Path zipFilePath = options.isFile(CmdOptions.SPECTRA_INPUT, true);
-		Path changesFile = options.hasOption(CmdOptions.CHANGES) ? options.isFile(CmdOptions.CHANGES, true) : null;
+		File input = new File(options.getOptionValue(CmdOptions.SPECTRA_INPUT));
+		if (!input.exists()) {
+			Log.abort(Converter.class, "Input '%s' does not exist.", input.toString());
+		}
 		
-		//get the output path (does not need to exist)
-		Path output = options.isFile(CmdOptions.OUTPUT, false);
+		if (input.isFile()) {
+
+			//get the input paths and make sure they exist
+			Path zipFilePath = options.isFile(CmdOptions.SPECTRA_INPUT, true);
+			Path changesFile = options.hasOption(CmdOptions.CHANGES) ? options.isFile(CmdOptions.CHANGES, true) : null;
+			//get the output path (does not need to exist)
+			Path output = options.isFile(CmdOptions.OUTPUT, false);
+			
+			convert(options, zipFilePath, output, changesFile);
+
+		} else { // input is directory
+			
+			//get the output path (does not need to exist)
+			Path output = options.isDirectory(CmdOptions.OUTPUT, false);
+			
+			for (File file : input.listFiles()) {
+				if (file.isFile()) {
+					convert(options, file.toPath(), output.resolve(FileUtils.getFileWithoutExtension(file.getName()) + ".csv"), null);
+				}
+			}
+		}
+	}
+
+	public static void convert(OptionParser options, Path input, Path output, Path changesFile) {
 		
+		//Path changesFile = options.hasOption(CmdOptions.CHANGES) ? options.isFile(CmdOptions.CHANGES, true) : null;
+
 		//wrap the paths of the input files
-		PathWrapper paths = new PathWrapper(zipFilePath, changesFile);
-		
+		PathWrapper paths = new PathWrapper(input, changesFile);
+
 		//we may switch this module out for another to change the output format
 		//the module has to get a spectra wrapper object as input and should 
 		//produce a list of Strings to write to a text-based file
 		Pipe<SpectraWrapper, String> converterPipe = null;
-		
+
 		//parse the given mode option. If none is given, use "ml"
 		String mode = options.getOptionValue(CmdOptions.MODE, "ml").toLowerCase(Locale.getDefault());
 		//add cases to switch for other modes
@@ -144,15 +167,15 @@ public class Converter {
 			Log.warn(Converter.class, "'%s' is not a valid mode option. Using ML output format...", mode);
 			converterPipe = new SpectraWrapperToMLFormatPipe(options.hasOption(CmdOptions.FILTER), Paths.get(output.toString() + ".map")).asPipe();
 		}
-		
+
 		//load the spectra from the given zip file
 		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(paths.getZipFilePath());
-		
+
 		//create a pipe linker
 		PipeLinker linker = new PipeLinker();
-		
+
 		//finally, create and link the modules together
-		
+
 		//check if we have to remove some kinds of nodes
 		if (options.hasOption(CmdOptions.REMOVE_NODES)) {
 			CoverageType[] values = options.getOptionValues(CmdOptions.REMOVE_NODES, CoverageType.class, true);
@@ -196,21 +219,21 @@ public class Converter {
 				}
 			}
 		}
-		
+
 		linker.append(new BuildCoherentSpectraModule());
-		
+
 		if (options.hasOption(CmdOptions.USE_BLOCKS)) {
 			//combine sequences of nodes that were executed by the 
 			//same set of test cases to a larger block
 			linker.append(new BuildBlockSpectraModule());
 		}
-		
+
 		if (options.hasOption(CmdOptions.INVERT_FAILING) || options.hasOption(CmdOptions.INVERT_SUCCESSFUL)) {
 			//invert involvements of nodes
 			linker.append(new InvertTraceInvolvementSpectraModule<SourceCodeBlock>(
 					options.hasOption(CmdOptions.INVERT_SUCCESSFUL), options.hasOption(CmdOptions.INVERT_FAILING)));
 		}
-		
+
 		linker.append(
 				//input: spectra, output: spectra wrapper
 				new SpectraToSpectraWrapperModule(changesFile),
@@ -219,7 +242,6 @@ public class Converter {
 				//input: Strings, writes to the specified output
 				new StringsToFileWriter<>(output, true))
 		.submitAndShutdown(spectra);//submit spectra
-		
-	}
+	} 
 	
 }
