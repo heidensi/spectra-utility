@@ -17,7 +17,6 @@ import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
-import se.de.hu_berlin.informatik.utils.tracking.NewProgressBarTracker;
 
 /**
  * Module that takes a spectra wrapper object and produces a sequence of Strings
@@ -72,7 +71,8 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
         ISpectra<SourceCodeBlock, ?> spectra = spectraWrapper.getSpectra();
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
-        socket.setTracker(new NewProgressBarTracker(spectra.getNodes().size()/50 + 1, spectra.getNodes().size()));
+//        NewProgressBarTracker tracker = new NewProgressBarTracker(spectra.getNodes().size()/50 + 1, spectra.getNodes().size());
+		socket.enableTracking(10);
         Collection<? extends ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
         Collection<? extends ITrace<SourceCodeBlock>> successfulTraces = spectra.getSuccessfulTraces();
 //        //iterate over the traces to get the test case identifiers
@@ -123,6 +123,7 @@ public class SpectraWrapperToCSVPipe extends AbstractProcessor<SpectraWrapper,St
         //send the string to the output of this pipe
         socket.produce(line.toString());
 		line.setLength(0);
+		
     }
 
 }

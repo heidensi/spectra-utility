@@ -20,7 +20,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
-import se.de.hu_berlin.informatik.utils.tracking.NewProgressBarTracker;
 
 /**
  * Module that takes a spectra wrapper object and produces a sequence of Strings
@@ -81,7 +80,8 @@ public class SpectraWrapperToMLFormatPipe extends AbstractProcessor<SpectraWrapp
         ISpectra<SourceCodeBlock, ?> spectra = spectraWrapper.getSpectra();
         
         Log.out(this, "node identifiers: %d,\ttest cases: %d", spectra.getNodes().size(), spectra.getTraces().size());
-        socket.setTracker(new NewProgressBarTracker(spectra.getNodes().size()/50 + 1, spectra.getNodes().size()));
+//        socket.setTracker(new NewProgressBarTracker(spectra.getNodes().size()/50 + 1, spectra.getNodes().size()));
+        socket.enableTracking(10);
         //iterate over the node identifiers
         for (INode<SourceCodeBlock> node : spectra.getNodes()) {
         	socket.track();
