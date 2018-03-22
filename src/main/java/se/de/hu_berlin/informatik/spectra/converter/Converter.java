@@ -143,6 +143,8 @@ public class Converter {
 
 	public static void convert(OptionParser options, Path input, Path output, Path changesFile) {
 		
+		Log.out(Converter.class, "Processing '%s'.", input.getFileName());
+		
 		//Path changesFile = options.hasOption(CmdOptions.CHANGES) ? options.isFile(CmdOptions.CHANGES, true) : null;
 
 		//wrap the paths of the input files
