@@ -43,6 +43,7 @@ public class Converter {
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		SPECTRA_INPUT("i", "spectraInput", true, "Path to input zip file (zipped and compressed spectra file) or directory with zip files.", true),
+		MAKE_COHERENT("co", "coherent", false, "Whether to fill gaps inside of methods. (From elements that span multiple lines...)", false),
 		USE_BLOCKS("b", "combineToBlocks", false, "Whether to combine sequences of spectra elements to larger blocks "
 				+ "if they were executed by the same set of traces.", false),
 		INVERT_SUCCESSFUL("invSucc", "invertSuccessful", false, "Whether to invert the involvements of nodes in successful traces. "
@@ -222,7 +223,10 @@ public class Converter {
 			}
 		}
 
-		linker.append(new BuildCoherentSpectraModule());
+		if (options.hasOption(CmdOptions.MAKE_COHERENT)) {
+			//fill empty gaps in methods?
+			linker.append(new BuildCoherentSpectraModule());
+		}
 
 		if (options.hasOption(CmdOptions.USE_BLOCKS)) {
 			//combine sequences of nodes that were executed by the 
