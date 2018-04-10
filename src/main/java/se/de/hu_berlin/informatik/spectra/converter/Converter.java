@@ -142,7 +142,7 @@ public class Converter {
 			String includeMarker = options.getOptionValue(CmdOptions.INPUT_FILE_MARKER, null);
 			
 			for (File file : input.listFiles()) {
-				if (includeMarker != null && file.getName().contains(includeMarker)) {
+				if (includeMarker != null && !file.getName().contains(includeMarker)) {
 					continue;
 				}
 				if (file.isFile()) {
