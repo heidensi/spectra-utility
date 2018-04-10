@@ -42,8 +42,12 @@ public class Converter {
 	
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		SPECTRA_INPUT("i", "spectraInput", true, "Path to input zip file (zipped and compressed spectra file) or directory with zip files.", true),
-		MAKE_COHERENT("co", "coherent", false, "Whether to fill gaps inside of methods. (From elements that span multiple lines...)", false),
+		SPECTRA_INPUT("i", "spectraInput", true, "Path to input zip file (zipped and compressed spectra file) "
+				+ "or directory with zip files.", true),
+		INPUT_FILE_MARKER("im", "inputMarker", true, "If the input is a directory and if set, "
+				+ "only files with the set argument in the filename will be included.", false),
+		MAKE_COHERENT("co", "coherent", false, "Whether to fill gaps inside of methods. "
+				+ "(From elements that span multiple lines...)", false),
 		USE_BLOCKS("b", "combineToBlocks", false, "Whether to combine sequences of spectra elements to larger blocks "
 				+ "if they were executed by the same set of traces.", false),
 		INVERT_SUCCESSFUL("invSucc", "invertSuccessful", false, "Whether to invert the involvements of nodes in successful traces. "
@@ -56,7 +60,8 @@ public class Converter {
 				"Whether to remove groups of nodes with certain properties from the spectra.", false),
 		CHANGES("c", "changesFile", true, "Path to file with change information (usually '.changes').", false),
 		MODE("m", "mode", true, "Output format. Arguments may be: 'csv' or 'ml'. Default is 'ml'.", false),
-		OUTPUT("o", "output", true, "Path to output file (e.g. '~/outputDir/project/bugID/data.csv') or output directory (if the input is a directory).", true);
+		OUTPUT("o", "output", true, "Path to output file (e.g. '~/outputDir/project/bugID/data.csv') or "
+				+ "output directory (if the input is a directory).", true);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -134,7 +139,12 @@ public class Converter {
 			//get the output path (does not need to exist)
 			Path output = options.isDirectory(CmdOptions.OUTPUT, false);
 			
+			String includeMarker = options.getOptionValue(CmdOptions.INPUT_FILE_MARKER, null);
+			
 			for (File file : input.listFiles()) {
+				if (includeMarker != null && file.getName().contains(includeMarker)) {
+					continue;
+				}
 				if (file.isFile()) {
 					convert(options, file.toPath(), output.resolve(FileUtils.getFileWithoutExtension(file.getName()) + ".csv"), null);
 				}
