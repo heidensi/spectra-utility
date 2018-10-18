@@ -5,9 +5,9 @@ package se.de.hu_berlin.informatik.spectra.reader.modules;
 
 import java.nio.file.Path;
 
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.reader.SpectraWrapper;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
